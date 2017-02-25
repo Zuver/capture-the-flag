@@ -15,15 +15,6 @@ namespace Engine.Entities
 {
     public abstract class AbstractPlayer : AbstractEntity
     {
-        #region Configurable attributes
-
-        /// <summary>
-        /// Respawn time in milliseconds
-        /// </summary>
-        private static int RespawnTimeInSeconds = 3;
-
-        #endregion Configurable attributes
-
         /// <summary>
         /// Team
         /// </summary>
@@ -162,7 +153,7 @@ namespace Engine.Entities
                 DropFlag();
             }
 
-            Health = 100;
+            Health = AppSettingsFacade.PlayerHealth;
             IsAlive = false;
             _timeOfDeath = DateTime.Now;
             _deathLocation = Body.GetPosition();
@@ -245,7 +236,8 @@ namespace Engine.Entities
                                       new Vector2(0f, 50f));
 
             // Spawn logic
-            if (!IsAlive && (DateTime.Now - _timeOfDeath).TotalMilliseconds > (RespawnTimeInSeconds * 1000))
+            if (!IsAlive &&
+                (DateTime.Now - _timeOfDeath).TotalMilliseconds > (AppSettingsFacade.PlayerRespawnTimeInSeconds * 1000))
             {
                 Spawn();
             }
@@ -331,7 +323,8 @@ namespace Engine.Entities
             else
             {
                 spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"),
-                    (RespawnTimeInSeconds - (int) ((DateTime.Now - _timeOfDeath).TotalSeconds)).ToString(),
+                    (AppSettingsFacade.PlayerRespawnTimeInSeconds - (int) ((DateTime.Now - _timeOfDeath).TotalSeconds))
+                    .ToString(),
                     _deathLocation - Camera2D.Instance.GetPosition(),
                     Team.Color);
             }

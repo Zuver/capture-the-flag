@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Utilities
 {
@@ -13,157 +8,83 @@ namespace Engine.Utilities
         /// <summary>
         /// App settings collection
         /// </summary>
-        private static NameValueCollection appSettings;
+        private static NameValueCollection _appSettings;
 
         /// <summary>
         /// Reloads all app settings
         /// </summary>
         public static void Refresh()
         {
-            appSettings = ConfigurationManager.AppSettings;
-            _isDebugModeOn = bool.Parse(appSettings["IsDebugModeOn"]);
+            _appSettings = ConfigurationManager.AppSettings;
+            _isDebugModeOn = bool.Parse(_appSettings["IsDebugModeOn"]);
         }
 
         /// <summary>
         /// Window width
         /// </summary>
-        public static int WindowWidth
-        {
-            get
-            {
-                return int.Parse(appSettings["WindowWidth"]);
-            }
-        }
+        public static int WindowWidth => int.Parse(_appSettings["WindowWidth"]);
 
         /// <summary>
         /// Window height
         /// </summary>
-        public static int WindowHeight
-        {
-            get
-            {
-                return int.Parse(appSettings["WindowHeight"]);
-            }
-        }
+        public static int WindowHeight => int.Parse(_appSettings["WindowHeight"]);
 
         /// <summary>
         /// Is full screen?
         /// </summary>
-        public static bool IsFullScreen
-        {
-            get
-            {
-                return bool.Parse(appSettings["IsFullScreen"]);
-            }
-        }
+        public static bool IsFullScreen => bool.Parse(_appSettings["IsFullScreen"]);
 
         /// <summary>
         /// Turn v-sync on?
         /// </summary>
-        public static bool SynchronizeWithVerticalRetrace
-        {
-            get
-            {
-                return bool.Parse(appSettings["SynchronizeWithVerticalRetrace"]);
-            }
-        }
+        public static bool SynchronizeWithVerticalRetrace => bool.Parse(_appSettings["SynchronizeWithVerticalRetrace"]);
 
         /// <summary>
         /// Is debug mode on?
         /// </summary>
         private static bool _isDebugModeOn;
+
         public static bool IsDebugModeOn
         {
-            get
-            {
-                return _isDebugModeOn;
-            }
-            set
-            {
-                _isDebugModeOn = value;
-            }
+            get { return _isDebugModeOn; }
+            set { _isDebugModeOn = value; }
         }
 
-        /// <summary>
-        /// Is pathfinding debug mode on?
-        /// </summary>
-        private static bool _isPathfindingDebugModeOn;
-        public static bool IsPathfindingDebugModeOn
-        {
-            get
-            {
-                return _isPathfindingDebugModeOn;
-            }
-            set
-            {
-                _isPathfindingDebugModeOn = value;
-            }
-        }
+        public static bool IsPathfindingDebugModeOn { get; set; }
 
         /// <summary>
         /// Player radius
         /// </summary>
-        public static float PlayerRadius
-        {
-            get
-            {
-                return float.Parse(appSettings["PlayerRadius"]);
-            }
-        }
+        public static float PlayerRadius => float.Parse(_appSettings["PlayerRadius"]);
 
         /// <summary>
         /// Player mass
         /// </summary>
-        public static float PlayerMass
-        {
-            get
-            {
-                return float.Parse(appSettings["PlayerMass"]);
-            }
-        }
+        public static float PlayerMass => float.Parse(_appSettings["PlayerMass"]);
 
         /// <summary>
         /// Player max speed
         /// </summary>
-        public static float PlayerMaxSpeed
-        {
-            get
-            {
-                return float.Parse(appSettings["PlayerMaxSpeed"]);
-            }
-        }
+        public static float PlayerMaxSpeed => float.Parse(_appSettings["PlayerMaxSpeed"]);
 
         /// <summary>
         /// Player sprint speed
         /// </summary>
-        public static float PlayerSprintSpeed
-        {
-            get
-            {
-                return float.Parse(appSettings["PlayerSprintSpeed"]);
-            }
-        }
+        public static float PlayerSprintSpeed => float.Parse(_appSettings["PlayerSprintSpeed"]);
 
         /// <summary>
         /// Player friction coefficient
         /// </summary>
-        public static float PlayerFrictionCoefficient
-        {
-            get
-            {
-                return float.Parse(appSettings["PlayerFrictionCoefficient"]);
-            }
-        }
+        public static float PlayerFrictionCoefficient => float.Parse(_appSettings["PlayerFrictionCoefficient"]);
 
         /// <summary>
         /// Player health
         /// </summary>
-        public static int PlayerHealth
-        {
-            get
-            {
-                return int.Parse(appSettings["PlayerHealth"]);
-            }
-        }
+        public static int PlayerHealth => int.Parse(_appSettings["PlayerHealth"]);
+
+        /// <summary>
+        /// Player respawn time in seconds
+        /// </summary>
+        public static int PlayerRespawnTimeInSeconds => int.Parse(_appSettings["PlayerRespawnTimeInSeconds"]);
     }
 }
