@@ -1,4 +1,5 @@
-﻿using Engine.Camera;
+﻿using System;
+using Engine.Camera;
 using Engine.Content;
 using Engine.Drawing;
 using Engine.GameStateManagement;
@@ -9,8 +10,6 @@ using Engine.UI.ProgressBars;
 using Engine.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System;
 
 namespace Engine.Entities
 {
@@ -36,7 +35,7 @@ namespace Engine.Entities
         /// <returns></returns>
         public AbstractTeam GetTeam()
         {
-            return this.Team;
+            return Team;
         }
 
         /// <summary>
@@ -50,7 +49,7 @@ namespace Engine.Entities
         /// <returns></returns>
         public AbstractTeam GetEnemyTeam()
         {
-            return this.EnemyTeam;
+            return EnemyTeam;
         }
 
         /// <summary>
@@ -64,7 +63,7 @@ namespace Engine.Entities
         /// <returns></returns>
         public AbstractGun GetGun()
         {
-            return this.Gun;
+            return Gun;
         }
 
         /// <summary>
@@ -78,7 +77,7 @@ namespace Engine.Entities
         /// <returns></returns>
         public bool HasFlag()
         {
-            return this.Flag != null;
+            return Flag != null;
         }
 
         /// <summary>
@@ -92,13 +91,13 @@ namespace Engine.Entities
         /// <param name="message"></param>
         protected void EnqueueMessage(string message)
         {
-            this._messageQueue.Enqueue(message);
+            _messageQueue.Enqueue(message);
         }
 
         /// <summary>
         /// Health bar
         /// </summary>
-        private CircleProgressBar _healthBar;
+        private readonly CircleProgressBar _healthBar;
 
         /// <summary>
         /// Is alive?
@@ -120,11 +119,12 @@ namespace Engine.Entities
         /// </summary>
         public virtual void CaptureFlag()
         {
-            this.Team.CaptureFlag();
-            this.Flag.ResetPosition();
-            CollisionPool.Instance.AddBody(this.Flag.GetBody());
-            ScreenController.Instance.ActiveScreen.EnqueueMessage(this.Team.GetName() + " captured " + this.Flag.GetTeam().GetName() + " flag");
-            this.Flag = null;
+            Team.CaptureFlag();
+            Flag.ResetPosition();
+            CollisionPool.Instance.AddBody(Flag.GetBody());
+            ScreenController.Instance.ActiveScreen.EnqueueMessage(Team.GetName() + " captured " +
+                                                                  Flag.GetTeam().GetName() + " flag");
+            Flag = null;
         }
 
         /// <summary>
@@ -138,11 +138,11 @@ namespace Engine.Entities
         /// <param name="damage"></param>
         public void DecreaseHealth(int damage)
         {
-            this.Health -= damage;
+            Health -= damage;
 
-            if (this.Health <= 0)
+            if (Health <= 0)
             {
-                this.Die(this.Body.GetPosition());
+                Die(Body.GetPosition());
             }
         }
 
@@ -152,32 +152,31 @@ namespace Engine.Entities
         /// <param name="where"></param>
         public virtual void Die(Vector2 where)
         {
-            if (this.Gun != null)
+            if (Gun != null)
             {
-                this.DropGun();
+                DropGun();
             }
 
-            if (this.HasFlag())
+            if (HasFlag())
             {
-                this.DropFlag();
+                DropFlag();
             }
 
-            this.Health = 100;
-            this.IsAlive = false;
-            this._timeOfDeath = DateTime.Now;
-            this._deathLocation = this.Body.GetPosition();
+            Health = 100;
+            IsAlive = false;
+            _timeOfDeath = DateTime.Now;
+            _deathLocation = Body.GetPosition();
 
             // Remove body from collision pool
-            CollisionPool.Instance.RemoveBody(this.Body);
+            CollisionPool.Instance.RemoveBody(Body);
 
-            this.Body.Reset();
-            this.Body.SetPosition(this.Team.GetNextSpawnPoint());
+            Body.Reset();
         }
 
         /// <summary>
         /// Health label
         /// </summary>
-        private TextLabel HealthLabel;
+        private readonly TextLabel _healthLabel;
 
         /// <summary>
         /// Constructor
@@ -185,31 +184,32 @@ namespace Engine.Entities
         /// <param name="body"></param>
         /// <param name="model"></param>
         /// <param name="team"></param>
+        /// <param name="enemyTeam"></param>
         protected AbstractPlayer(AbstractBody body, PrimitiveBuilder model, AbstractTeam team, AbstractTeam enemyTeam)
             : base(body, model)
         {
-            this.Team = team;
-            this.EnemyTeam = enemyTeam;
-            this.Health = AppSettingsFacade.PlayerHealth;
+            Team = team;
+            EnemyTeam = enemyTeam;
+            Health = AppSettingsFacade.PlayerHealth;
 
-            this.HealthLabel = new TextLabel(String.Empty,
+            _healthLabel = new TextLabel(string.Empty,
                 SpriteFontRepository.Instance.Get("test"),
                 Vector2.Zero,
                 LabelAlignment.Center,
                 Color.White);
 
-            this._messageQueue = new TextLabelQueue(
+            _messageQueue = new TextLabelQueue(
                 SpriteFontRepository.Instance.Get("test"),
                 Vector2.Zero,
                 LabelAlignment.Center,
                 Color.White,
                 3000);
 
-            this._healthBar = new CircleProgressBar(new Color(20, 20, 30));
+            _healthBar = new CircleProgressBar(new Color(20, 20, 30));
 
-            EntityTable.Instance.Add(this.Body, this);
+            EntityTable.Instance.Add(Body, this);
 
-            this.IsAlive = true;
+            IsAlive = true;
         }
 
         /// <summary>
@@ -219,42 +219,35 @@ namespace Engine.Entities
         {
             base.Update();
 
-            // Update gun
-            if (this.Gun != null)
-            {
-                // Update gun position to match this player's position
-                this.Gun.GetBody().SetPosition(this.Body.GetPosition());
-            }
+            // Update gun position to match this player's position
+            Gun?.GetBody().SetPosition(Body.GetPosition());
 
             // Update flag
-            if (this.Flag != null)
-            {
-                this.Flag.GetBody().SetPosition(this.Body.GetPosition());
-            }
+            Flag?.GetBody().SetPosition(Body.GetPosition());
 
             // Update health label
-            this.HealthLabel.SetText("Health: " + this.Health);
-            this.HealthLabel.TopLeftPosition = this.Body.GetPosition() - this.HealthLabel.Origin -
-                                               Camera2D.Instance.GetPosition() + new Vector2(0f, 30f);
+            _healthLabel.SetText("Health: " + Health);
+            _healthLabel.TopLeftPosition = Body.GetPosition() - _healthLabel.Origin -
+                                           Camera2D.Instance.GetPosition() + new Vector2(0f, 30f);
 
             // Update health bar
-            this._healthBar.SetProgress((float) this.Health/(float) AppSettingsFacade.PlayerHealth);
-            this._healthBar.SetPosition(this.Body.GetPosition());
+            _healthBar.SetProgress(Health / (float) AppSettingsFacade.PlayerHealth);
+            _healthBar.SetPosition(Body.GetPosition());
 
             // If the player is moving, then face the direction of movement
-            if (this.Body.GetVelocity().LengthSquared() >= this.Body.GetMaxSpeed()*this.Body.GetMaxSpeed())
+            if (Body.GetVelocity().LengthSquared() >= Body.GetMaxSpeed() * Body.GetMaxSpeed())
             {
-                this.Look(this.Body.GetVelocity()*int.MaxValue);
+                Look(Body.GetVelocity() * int.MaxValue);
             }
 
-            this._messageQueue.Update();
-            this._messageQueue.SetPosition(this.Body.GetPosition() - Camera2D.Instance.GetPosition() +
-                                           new Vector2(0f, 50f));
+            _messageQueue.Update();
+            _messageQueue.SetPosition(Body.GetPosition() - Camera2D.Instance.GetPosition() +
+                                      new Vector2(0f, 50f));
 
             // Spawn logic
-            if (!this.IsAlive && (DateTime.Now - this._timeOfDeath).TotalMilliseconds > (RespawnTimeInSeconds * 1000))
+            if (!IsAlive && (DateTime.Now - _timeOfDeath).TotalMilliseconds > (RespawnTimeInSeconds * 1000))
             {
-                this.Spawn();
+                Spawn();
             }
         }
 
@@ -264,10 +257,10 @@ namespace Engine.Entities
         /// <param name="gun"></param>
         public virtual void PickUpGun(AbstractGun gun)
         {
-            if (this.Gun == null)
+            if (Gun == null)
             {
-                this.Gun = gun;
-                this.Gun.SetPlayer(this);
+                Gun = gun;
+                Gun.SetPlayer(this);
                 CollisionPool.Instance.RemoveBody(gun.GetBody());
             }
         }
@@ -288,9 +281,9 @@ namespace Engine.Entities
         /// <param name="flag"></param>
         public virtual void PickUpFlag(AbstractFlag flag)
         {
-            if (this.Flag == null)
+            if (Flag == null)
             {
-                this.Flag = flag;
+                Flag = flag;
                 CollisionPool.Instance.RemoveBody(flag.GetBody());
                 ScreenController.Instance.ActiveScreen.EnqueueMessage(flag.GetTeam().GetName() + " flag was taken");
             }
@@ -301,9 +294,9 @@ namespace Engine.Entities
         /// </summary>
         public virtual void Spawn()
         {
-            this.IsAlive = true;
-            CollisionPool.Instance.AddBody(this.Body);
-            this.Body.SetPosition(this.Team.GetNextSpawnPoint());
+            IsAlive = true;
+            CollisionPool.Instance.AddBody(Body);
+            Body.SetPosition(Team.GetNextSpawnPoint());
         }
 
         /// <summary>
@@ -314,29 +307,33 @@ namespace Engine.Entities
         /// <param name="spriteBatch"></param>
         public override void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect, SpriteBatch spriteBatch)
         {
-            if (this.IsAlive)
+            if (IsAlive)
             {
                 base.Draw(graphicsDevice, basicEffect, spriteBatch);
 
-                this.HealthLabel.Draw(spriteBatch);
-                this._healthBar.Draw(graphicsDevice, basicEffect);
-                this._messageQueue.Draw(spriteBatch);
+                _healthLabel.Draw(spriteBatch);
+                _healthBar.Draw(graphicsDevice, basicEffect);
+                _messageQueue.Draw(spriteBatch);
 
                 if (AppSettingsFacade.IsDebugModeOn)
                 {
-                    Vector2 bodyPosition = this.Body.GetPosition();
-                    spriteBatch.DrawString(SpriteFontRepository.Instance.Get("debug"), "Body position: (" + bodyPosition.X + ", " + bodyPosition.Y + ")", bodyPosition - Camera2D.Instance.GetPosition() + new Vector2(30f, 0f), Color.Yellow);
+                    Vector2 bodyPosition = Body.GetPosition();
+                    spriteBatch.DrawString(SpriteFontRepository.Instance.Get("debug"),
+                        "Body position: (" + bodyPosition.X + ", " + bodyPosition.Y + ")",
+                        bodyPosition - Camera2D.Instance.GetPosition() + new Vector2(30f, 0f), Color.Yellow);
 
-                    Vector2 bodyVelocity = this.Body.GetVelocity();
-                    spriteBatch.DrawString(SpriteFontRepository.Instance.Get("debug"), "Body velocity: (" + bodyVelocity.X + ", " + bodyVelocity.Y + ")", bodyPosition - Camera2D.Instance.GetPosition() + new Vector2(30f, 20f), Color.Yellow);
+                    Vector2 bodyVelocity = Body.GetVelocity();
+                    spriteBatch.DrawString(SpriteFontRepository.Instance.Get("debug"),
+                        "Body velocity: (" + bodyVelocity.X + ", " + bodyVelocity.Y + ")",
+                        bodyPosition - Camera2D.Instance.GetPosition() + new Vector2(30f, 20f), Color.Yellow);
                 }
             }
             else
             {
                 spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"),
-                    (RespawnTimeInSeconds - (int)((DateTime.Now - this._timeOfDeath).TotalSeconds)).ToString(),
-                    this._deathLocation - Camera2D.Instance.GetPosition(),
-                    this.Team.Color);
+                    (RespawnTimeInSeconds - (int) ((DateTime.Now - _timeOfDeath).TotalSeconds)).ToString(),
+                    _deathLocation - Camera2D.Instance.GetPosition(),
+                    Team.Color);
             }
         }
 
@@ -346,10 +343,7 @@ namespace Engine.Entities
         /// <param name="direction"></param>
         protected void FireGun(Vector2 direction)
         {
-            if (this.Gun != null)
-            {
-                this.Gun.Fire(direction);
-            }
+            Gun?.Fire(direction);
         }
 
         /// <summary>
@@ -357,7 +351,7 @@ namespace Engine.Entities
         /// </summary>
         protected void DropGun()
         {
-            Vector2 reverseDirection = -this.Body.GetVelocity();
+            Vector2 reverseDirection = -Body.GetVelocity();
             reverseDirection.Normalize();
 
             if (float.IsNaN(reverseDirection.X))
@@ -367,13 +361,16 @@ namespace Engine.Entities
 
             Vector2 direction = reverseDirection;
 
-            this.Gun.GetBody().SetPosition(this.Body.GetPosition() + (((CircleBody)this.Body).GetRadius() + ((CircleBody)this.Gun.GetBody()).GetRadius() + 1f) * direction);
+            Gun.GetBody()
+                .SetPosition(Body.GetPosition() +
+                             (((CircleBody) Body).GetRadius() + ((CircleBody) Gun.GetBody()).GetRadius() + 1f) *
+                             direction);
 
             // Add gun body back to collision pool
-            CollisionPool.Instance.AddBody(this.Gun.GetBody());
+            CollisionPool.Instance.AddBody(Gun.GetBody());
 
-            this.Gun.SetPlayer(null);
-            this.Gun = null;
+            Gun.SetPlayer(null);
+            Gun = null;
         }
 
         /// <summary>
@@ -381,8 +378,8 @@ namespace Engine.Entities
         /// </summary>
         private void DropFlag()
         {
-            CollisionPool.Instance.AddBody(this.Flag.GetBody());
-            this.Flag = null;
+            CollisionPool.Instance.AddBody(Flag.GetBody());
+            Flag = null;
         }
     }
 }
