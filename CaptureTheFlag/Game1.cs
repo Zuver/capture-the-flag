@@ -1,5 +1,4 @@
 ﻿#region Using Statements
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -18,15 +17,14 @@ namespace CaptureTheFlag
     public class Game1 : Game
     {
         // The necessary things
-        private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
-        private BasicEffect basicEffect;
-        private KeyboardState PreviousKeyboardState;
+        private readonly GraphicsDeviceManager _graphics;
+        private SpriteBatch _spriteBatch;
+        private BasicEffect _basicEffect;
+        private KeyboardState _previousKeyboardState;
 
         public Game1()
-            : base()
         {
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
@@ -41,26 +39,27 @@ namespace CaptureTheFlag
             // TODO: Add your initialization logic here
 
             // Set up event handling
-            ScreenController.Instance.Closed += delegate(object sender, EventArgs e)
-            {
-                this.Exit();
+            ScreenController.Instance.Closed += delegate {
+                Exit();
             };
 
             // Load application settings
             AppSettingsFacade.Refresh();
-            this.graphics.PreferredBackBufferWidth = AppSettingsFacade.WindowWidth;
-            this.graphics.PreferredBackBufferHeight = AppSettingsFacade.WindowHeight;
-            this.graphics.IsFullScreen = AppSettingsFacade.IsFullScreen;
-            this.graphics.SynchronizeWithVerticalRetrace = AppSettingsFacade.SynchronizeWithVerticalRetrace;
-            this.graphics.PreferMultiSampling = true;
+            _graphics.PreferredBackBufferWidth = AppSettingsFacade.WindowWidth;
+            _graphics.PreferredBackBufferHeight = AppSettingsFacade.WindowHeight;
+            _graphics.IsFullScreen = AppSettingsFacade.IsFullScreen;
+            _graphics.SynchronizeWithVerticalRetrace = AppSettingsFacade.SynchronizeWithVerticalRetrace;
+            _graphics.PreferMultiSampling = true;
 
-            this.basicEffect = new BasicEffect(graphics.GraphicsDevice);
-            this.basicEffect.VertexColorEnabled = true;
-            this.basicEffect.Projection = Matrix.CreateOrthographicOffCenter(0,
-                this.graphics.PreferredBackBufferWidth,
-                this.graphics.PreferredBackBufferHeight, 0, 0, 1);
+            _basicEffect = new BasicEffect(_graphics.GraphicsDevice)
+            {
+                VertexColorEnabled = true,
+                Projection = Matrix.CreateOrthographicOffCenter(0,
+                    _graphics.PreferredBackBufferWidth,
+                    _graphics.PreferredBackBufferHeight, 0, 0, 1)
+            };
 
-            this.IsMouseVisible = true;
+            IsMouseVisible = true;
 
             base.Initialize();
         }
@@ -72,9 +71,7 @@ namespace CaptureTheFlag
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load game content here
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Load fonts
             SpriteFontRepository.Instance.Initialize(Content);
@@ -104,12 +101,12 @@ namespace CaptureTheFlag
             KeyboardState keyboardState = Keyboard.GetState();
 
             // Toggle various debug modes
-            if (keyboardState.IsKeyDown(Keys.F1) && !this.PreviousKeyboardState.IsKeyDown(Keys.F1))
+            if (keyboardState.IsKeyDown(Keys.F1) && !_previousKeyboardState.IsKeyDown(Keys.F1))
             {
                 AppSettingsFacade.IsDebugModeOn = !AppSettingsFacade.IsDebugModeOn;
             }
 
-            if (keyboardState.IsKeyDown(Keys.F2) && !this.PreviousKeyboardState.IsKeyDown(Keys.F2))
+            if (keyboardState.IsKeyDown(Keys.F2) && !_previousKeyboardState.IsKeyDown(Keys.F2))
             {
                 AppSettingsFacade.IsPathfindingDebugModeOn = !AppSettingsFacade.IsPathfindingDebugModeOn;
             }
@@ -118,11 +115,11 @@ namespace CaptureTheFlag
             ScreenController.Instance.ActiveScreen.Update();
 
             // Update global current game time
-            Engine.Utilities.TimeHelper.SetCurrentGameTime(gameTime.TotalGameTime.TotalMilliseconds);
+            TimeHelper.SetCurrentGameTime(gameTime.TotalGameTime.TotalMilliseconds);
 
             base.Update(gameTime);
 
-            this.PreviousKeyboardState = keyboardState;
+            _previousKeyboardState = keyboardState;
         }
 
         /// <summary>
@@ -135,26 +132,30 @@ namespace CaptureTheFlag
 
             // TODO: Add your drawing code here
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
 
             // Draw active screen and its components
-            ScreenController.Instance.ActiveScreen.Draw(GraphicsDevice, this.basicEffect, spriteBatch);
+            ScreenController.Instance.ActiveScreen.Draw(GraphicsDevice, _basicEffect, _spriteBatch);
 
-            spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"), "Press F1 to toggle debug mode", new Vector2(10, 10), Color.White);
-            spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"), "Press F2 to toggle pathfinding debug mode", new Vector2(10, 40), Color.White);
+            // _spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"), "Press F1 to toggle debug mode", new Vector2(10, 10), Color.White);
+            // _spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"), "Press F2 to toggle pathfinding debug mode", new Vector2(10, 40), Color.White);
 
             // If debug mode is on, display useful information on the screen
             if (AppSettingsFacade.IsDebugModeOn)
             {
                 // Display mouse position
-                spriteBatch.DrawString(SpriteFontRepository.Instance.Get("debug"), "Mouse position: <" + Mouse.GetState().X + ", " + Mouse.GetState().Y + ">", new Vector2(10, 30), Color.Yellow);
+                _spriteBatch.DrawString(SpriteFontRepository.Instance.Get("debug"),
+                    "Mouse position: <" + Mouse.GetState().X + ", " + Mouse.GetState().Y + ">", new Vector2(10, 30),
+                    Color.Yellow);
 
                 // Display camera position
                 Vector2 cameraPosition = Camera2D.Instance.GetPosition();
-                spriteBatch.DrawString(SpriteFontRepository.Instance.Get("debug"), "Camera position: <" + cameraPosition.X + ", " + cameraPosition.Y + ">", new Vector2(10, 50), Color.Yellow);
+                _spriteBatch.DrawString(SpriteFontRepository.Instance.Get("debug"),
+                    "Camera position: <" + cameraPosition.X + ", " + cameraPosition.Y + ">", new Vector2(10, 50),
+                    Color.Yellow);
             }
 
-            spriteBatch.End();
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }

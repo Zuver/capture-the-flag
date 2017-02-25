@@ -1,17 +1,11 @@
-﻿using Engine.Content;
-using Engine.Drawing;
-using Engine.Entities;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Engine.Content;
 using Engine.Entities.Graphs;
 using Engine.Physics.Bodies;
-using Engine.UI.Labels;
 using Engine.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Entities
 {
@@ -33,7 +27,7 @@ namespace Engine.Entities
         /// <returns></returns>
         public List<AbstractWall> GetWalls()
         {
-            return this.Walls;
+            return Walls;
         }
 
         /// <summary>
@@ -41,16 +35,16 @@ namespace Engine.Entities
         /// </summary>
         public void AddWall(AbstractWall wall)
         {
-            this.Walls.Add(wall);
-            NodeGraph.Instance.AddNodes(Node.Construct(wall.GetBody(), (int)AppSettingsFacade.PlayerRadius, 50));
-            this.ConstructNodeGraphEdges();
+            Walls.Add(wall);
+            NodeGraph.Instance.AddNodes(Node.Construct(wall.GetBody(), (int) AppSettingsFacade.PlayerRadius, 50));
+            ConstructNodeGraphEdges();
             NodeGraph.Instance.BuildShortestPathData();
         }
 
         /// <summary>
         /// Teams
         /// </summary>
-        private List<AbstractTeam> Teams;
+        private readonly List<AbstractTeam> _teams;
 
         /// <summary>
         /// Add team
@@ -58,13 +52,13 @@ namespace Engine.Entities
         /// <param name="team"></param>
         public void AddTeam(AbstractTeam team)
         {
-            this.Teams.Add(team);
+            _teams.Add(team);
         }
 
         /// <summary>
         /// Guns
         /// </summary>
-        private List<AbstractGun> Guns;
+        private readonly List<AbstractGun> _guns;
 
         /// <summary>
         /// Add gun
@@ -72,21 +66,21 @@ namespace Engine.Entities
         /// <param name="gun"></param>
         public void AddGun(AbstractGun gun)
         {
-            this.Guns.Add(gun);
+            _guns.Add(gun);
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="size"></param>
-        public AbstractMap(Vector2 size)
+        protected AbstractMap(Vector2 size)
         {
-            this.Size = size;
-            this.Walls = new List<AbstractWall>();
-            this.Teams = new List<AbstractTeam>();
-            this.Guns = new List<AbstractGun>();
+            Size = size;
+            Walls = new List<AbstractWall>();
+            _teams = new List<AbstractTeam>();
+            _guns = new List<AbstractGun>();
 
-            this.ConstructNodeGraphEdges();
+            ConstructNodeGraphEdges();
         }
 
         #region Abstract methods
@@ -100,17 +94,17 @@ namespace Engine.Entities
         /// </summary>
         public void Update()
         {
-            foreach (AbstractWall wall in this.Walls)
+            foreach (AbstractWall wall in Walls)
             {
                 wall.Update();
             }
 
-            foreach (AbstractTeam team in this.Teams)
+            foreach (AbstractTeam team in _teams)
             {
                 team.Update();
             }
 
-            foreach (AbstractGun gun in this.Guns)
+            foreach (AbstractGun gun in _guns)
             {
                 gun.Update();
             }
@@ -126,7 +120,7 @@ namespace Engine.Entities
             AbstractGun result = null;
 
             // Obtain guns that have no owner
-            AbstractGun[] orhpanGuns = this.Guns.Where(n => !n.HasOwner()).ToArray();
+            AbstractGun[] orhpanGuns = _guns.Where(n => !n.HasOwner()).ToArray();
 
             if (orhpanGuns.Length > 0)
             {
@@ -172,10 +166,10 @@ namespace Engine.Entities
             List<Node> result = new List<Node>();
 
             // Add the first Node in the route
-            Node closestNodeToStart = this.GetClosestNode(start);
+            Node closestNodeToStart = GetClosestNode(start);
             result.Add(closestNodeToStart);
 
-            Node closestNodeToGoal = this.GetClosestNode(goal);
+            Node closestNodeToGoal = GetClosestNode(goal);
 
             Node currentNode = closestNodeToStart;
 
@@ -184,11 +178,6 @@ namespace Engine.Entities
                 Node nextNode = currentNode.GetShortestPathNode(closestNodeToGoal);
                 result.Add(nextNode);
                 currentNode = nextNode;
-            }
-
-            if (result == null)
-            {
-                result = null;
             }
 
             return result;
@@ -227,8 +216,8 @@ namespace Engine.Entities
             bool result = false;
 
             LineBody lineBody = BodyFactory.Line(true, 0f, 0f, 0f, false, start, end);
-            
-            foreach (AbstractWall wall in this.Walls)
+
+            foreach (AbstractWall wall in Walls)
             {
                 result = wall.GetBody().DetectCollision(lineBody);
 
@@ -249,7 +238,7 @@ namespace Engine.Entities
         /// <param name="spriteBatch"></param>
         public void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect, SpriteBatch spriteBatch)
         {
-            foreach (AbstractWall wall in this.Walls)
+            foreach (AbstractWall wall in Walls)
             {
                 wall.Draw(graphicsDevice, basicEffect, spriteBatch);
             }
@@ -259,19 +248,22 @@ namespace Engine.Entities
                 NodeGraph.Instance.Draw(graphicsDevice, basicEffect, true);
             }
 
-            foreach (AbstractTeam team in this.Teams)
+            foreach (AbstractTeam team in _teams)
             {
                 team.Draw(graphicsDevice, basicEffect, spriteBatch);
             }
 
-            foreach (AbstractGun gun in this.Guns)
+            foreach (AbstractGun gun in _guns)
             {
                 gun.Draw(graphicsDevice, basicEffect, spriteBatch);
             }
 
-            for (int i = 0; i < this.Teams.Count; i++)
+            for (int i = 0; i < _teams.Count; i++)
             {
-                spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"), this.Teams[i].Score.ToString(), new Vector2(AppSettingsFacade.WindowWidth / 2, 10 + (i * 30)), this.Teams[i].Color);
+                spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"),
+                    _teams[i].GetName() + ": " + _teams[i].Score.ToString(),
+                    new Vector2((float) AppSettingsFacade.WindowWidth / 2, 10 + (i * 30)),
+                    _teams[i].Color);
             }
         }
 
@@ -288,22 +280,25 @@ namespace Engine.Entities
         private Node GetClosestNode(Vector2 position)
         {
             // Candidates can only be Nodes that are "visible" from the given positon
-            List<Node> candidates = this.GetVisibleNodes(position);
+            List<Node> candidates = GetVisibleNodes(position);
 
             Node result = candidates.FirstOrDefault();
 
             if (candidates.Count > 1)
             {
-                float shortestDistance = (position - result.Position).LengthSquared();
-
-                foreach (Node node in candidates)
+                if (result != null)
                 {
-                    float distance = (position - node.Position).LengthSquared();
+                    float shortestDistance = (position - result.Position).LengthSquared();
 
-                    if (distance < shortestDistance)
+                    foreach (Node node in candidates)
                     {
-                        shortestDistance = distance;
-                        result = node;
+                        float distance = (position - node.Position).LengthSquared();
+
+                        if (distance < shortestDistance)
+                        {
+                            shortestDistance = distance;
+                            result = node;
+                        }
                     }
                 }
             }
@@ -326,7 +321,7 @@ namespace Engine.Entities
                 {
                     if (node1 != node2)
                     {
-                        if (!this.CheckLineCollision(node1.Position, node2.Position))
+                        if (!CheckLineCollision(node1.Position, node2.Position))
                         {
                             NodeGraph.Instance.AddEdge(node1, node2);
                         }

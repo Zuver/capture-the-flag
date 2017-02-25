@@ -4,65 +4,54 @@ using Engine.UI.Buttons;
 using Engine.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CaptureTheFlag.Entities.Screens
 {
     public class MainMenuScreen : AbstractScreen
     {
         /// <summary>
-        /// Buttons
+        /// Start button
         /// </summary>
-        private TextButton StartButton;
-        private TextButton ExitButton;
+        private readonly TextButton _startButton;
+
+        /// <summary>
+        /// Exit button
+        /// </summary>
+        private readonly TextButton _exitButton;
 
         /// <summary>
         /// Singleton
         /// </summary>
-        private static MainMenuScreen instance;
-        public static MainMenuScreen Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new MainMenuScreen();
-                }
+        private static MainMenuScreen _instance;
 
-                return instance;
-            }
-        }
+        public static MainMenuScreen Instance => _instance ?? (_instance = new MainMenuScreen());
 
         /// <summary>
         /// Constructor
         /// </summary>
         private MainMenuScreen()
-            : base()
         {
             // Define start button
-            this.StartButton = new TextButton(new Engine.UI.Labels.TextLabel("Start",
-                SpriteFontRepository.Instance.Get("test"),
-                new Vector2(AppSettingsFacade.WindowWidth / 2, AppSettingsFacade.WindowHeight / 2),
-                Engine.UI.Labels.LabelAlignment.Center,
-                Color.White),
+            _startButton = new TextButton(new Engine.UI.Labels.TextLabel("Start",
+                    SpriteFontRepository.Instance.Get("test"),
+                    new Vector2((float) AppSettingsFacade.WindowWidth / 2, (float) AppSettingsFacade.WindowHeight / 2),
+                    Engine.UI.Labels.LabelAlignment.Center,
+                    Color.White),
                 Color.Yellow);
 
-            this.StartButton.Clicked += OnStartButtonClicked;
+            _startButton.Clicked += OnStartButtonClicked;
 
             // Define exit button
-            this.ExitButton = new TextButton(new Engine.UI.Labels.TextLabel("Exit",
-                SpriteFontRepository.Instance.Get("test"),
-                new Vector2(AppSettingsFacade.WindowWidth / 2, AppSettingsFacade.WindowHeight / 2 + (0.1f * AppSettingsFacade.WindowHeight)),
-                Engine.UI.Labels.LabelAlignment.Center,
-                Color.White),
+            _exitButton = new TextButton(new Engine.UI.Labels.TextLabel("Exit",
+                    SpriteFontRepository.Instance.Get("test"),
+                    new Vector2((float) AppSettingsFacade.WindowWidth / 2,
+                        (float) AppSettingsFacade.WindowHeight / 2 + (0.1f * AppSettingsFacade.WindowHeight)),
+                    Engine.UI.Labels.LabelAlignment.Center,
+                    Color.White),
                 Color.Yellow);
 
-            this.ExitButton.Clicked += OnExitButtonClicked;
+            _exitButton.Clicked += OnExitButtonClicked;
         }
 
         /// <summary>
@@ -70,8 +59,8 @@ namespace CaptureTheFlag.Entities.Screens
         /// </summary>
         public override void Update()
         {
-            this.StartButton.Update();
-            this.ExitButton.Update();
+            _startButton.Update();
+            _exitButton.Update();
         }
 
         /// <summary>
@@ -82,8 +71,8 @@ namespace CaptureTheFlag.Entities.Screens
         /// <param name="spriteBatch"></param>
         public override void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect, SpriteBatch spriteBatch)
         {
-            this.StartButton.Draw(spriteBatch);
-            this.ExitButton.Draw(spriteBatch);
+            _startButton.Draw(spriteBatch);
+            _exitButton.Draw(spriteBatch);
         }
 
         /// <summary>

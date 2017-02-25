@@ -1,18 +1,12 @@
 ﻿using CaptureTheFlag.Entities.Maps;
 using Engine.Camera;
-using Engine.Content;
-using Engine.Drawing;
 using Engine.Entities;
 using Engine.GameStateManagement;
-using Engine.Physics.Bodies;
 using Engine.Physics.Bodies.Collisions;
-using Engine.UI.Buttons;
-using Engine.UI.Labels;
 using Engine.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
 
 namespace CaptureTheFlag.Entities.Screens
 {
@@ -26,27 +20,16 @@ namespace CaptureTheFlag.Entities.Screens
         /// <summary>
         /// This is a singleton class
         /// </summary>
-        private static GameScreen instance;
-        public static GameScreen Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new GameScreen();
-                }
+        private static GameScreen _instance;
 
-                return instance;
-            }
-        }
+        public static GameScreen Instance => _instance ?? (_instance = new GameScreen());
 
         /// <summary>
         /// Constructor
         /// </summary>
         private GameScreen()
-            : base()
         {
-            this.Map = new MyMap(new Vector2(AppSettingsFacade.WindowWidth, AppSettingsFacade.WindowHeight));
+            Map = new MyMap(new Vector2(AppSettingsFacade.WindowWidth, AppSettingsFacade.WindowHeight));
             Camera2D.Instance.Initialize(Vector2.Zero, 20.0f, 3.0f);
         }
 
@@ -63,7 +46,7 @@ namespace CaptureTheFlag.Entities.Screens
                 ScreenController.Instance.NavigateBack();
             }
 
-            this.Map.Update();
+            Map.Update();
 
             Camera2D.Instance.Update();
             CollisionPool.Instance.Update();
@@ -78,7 +61,7 @@ namespace CaptureTheFlag.Entities.Screens
         public override void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect, SpriteBatch spriteBatch)
         {
             base.Draw(graphicsDevice, basicEffect, spriteBatch);
-            this.Map.Draw(graphicsDevice, basicEffect, spriteBatch);
+            Map.Draw(graphicsDevice, basicEffect, spriteBatch);
         }
     }
 }

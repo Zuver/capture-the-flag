@@ -1,12 +1,6 @@
-﻿using Engine.Camera;
+﻿using System;
 using Engine.Physics.Bodies.Collisions;
-using Engine.Physics.Bodies.Collisions.EventHandlers;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Engine.Physics.Bodies
 {
@@ -26,7 +20,7 @@ namespace Engine.Physics.Bodies
         /// <returns></returns>
         public Vector2 GetPosition()
         {
-            return this.Position;
+            return Position;
         }
 
         /// <summary>
@@ -36,7 +30,7 @@ namespace Engine.Physics.Bodies
         /// <returns></returns>
         public AbstractBody SetPosition(Vector2 position)
         {
-            this.Position = position;
+            Position = position;
             return this;
         }
 
@@ -51,7 +45,7 @@ namespace Engine.Physics.Bodies
         /// <returns></returns>
         public Vector2 GetVelocity()
         {
-            return this.Velocity;
+            return Velocity;
         }
 
         /// <summary>
@@ -60,28 +54,28 @@ namespace Engine.Physics.Bodies
         /// <param name="velocity"></param>
         public void SetVelocity(Vector2 velocity)
         {
-            this.Velocity = velocity;
+            Velocity = velocity;
         }
 
         /// <summary>
         /// Is this body too heavy to move by any force?
         /// </summary>
-        private bool Rigid;
+        private readonly bool _rigid;
 
         /// <summary>
         /// Acceleration
         /// </summary>
-        private Vector2 Acceleration;
+        private Vector2 _acceleration;
 
         /// <summary>
         /// Mass
         /// </summary>
-        private float Mass;
+        private readonly float _mass;
 
         /// <summary>
         /// Max speed
         /// </summary>
-        private float MaxSpeed;
+        private float _maxSpeed;
 
         /// <summary>
         /// Get max speed
@@ -89,7 +83,7 @@ namespace Engine.Physics.Bodies
         /// <returns></returns>
         public float GetMaxSpeed()
         {
-            return this.MaxSpeed;
+            return _maxSpeed;
         }
 
         /// <summary>
@@ -98,13 +92,13 @@ namespace Engine.Physics.Bodies
         /// <param name="maxSpeed"></param>
         public void SetMaxSpeed(float maxSpeed)
         {
-            this.MaxSpeed = maxSpeed;
+            _maxSpeed = maxSpeed;
         }
 
         /// <summary>
         /// Friction coefficient
         /// </summary>
-        private float FrictionCoefficient;
+        private readonly float _frictionCoefficient;
 
         /// <summary>
         /// Constructor
@@ -114,17 +108,18 @@ namespace Engine.Physics.Bodies
         /// <param name="maxSpeed"></param>
         /// <param name="frictionCoefficient"></param>
         /// <param name="addToCollisionPool"></param>
-        public AbstractBody(bool rigid, float mass, float maxSpeed, float frictionCoefficient, bool addToCollisionPool)
+        protected AbstractBody(bool rigid, float mass, float maxSpeed, float frictionCoefficient,
+            bool addToCollisionPool)
         {
-            this.Rigid = rigid;
-            this.Mass = mass;
-            this.MaxSpeed = maxSpeed;
-            this.FrictionCoefficient = frictionCoefficient;
+            _rigid = rigid;
+            _mass = mass;
+            _maxSpeed = maxSpeed;
+            _frictionCoefficient = frictionCoefficient;
 
             // Put this Body in a state of rest
-            this.Acceleration = Vector2.Zero;
-            this.Velocity = Vector2.Zero;
-            this.Position = Vector2.Zero;
+            _acceleration = Vector2.Zero;
+            Velocity = Vector2.Zero;
+            Position = Vector2.Zero;
 
             if (addToCollisionPool)
             {
@@ -147,12 +142,12 @@ namespace Engine.Physics.Bodies
         /// </summary>
         public void Update()
         {
-            if (!this.Rigid)
+            if (!_rigid)
             {
-                this.ApplyFriction();
-                this.LimitAcceleration();
-                this.LimitVelocity();
-                this.UpdatePosition();
+                ApplyFriction();
+                LimitAcceleration();
+                LimitVelocity();
+                UpdatePosition();
             }
         }
 
@@ -161,8 +156,8 @@ namespace Engine.Physics.Bodies
         /// </summary>
         public void Reset()
         {
-            this.Acceleration = Vector2.Zero;
-            this.Velocity = Vector2.Zero;
+            _acceleration = Vector2.Zero;
+            Velocity = Vector2.Zero;
         }
 
         /// <summary>
@@ -171,8 +166,8 @@ namespace Engine.Physics.Bodies
         private void ApplyFriction()
         {
             // Apply drag in opposite direction of travel direction
-            this.Acceleration *= this.FrictionCoefficient;
-            this.Velocity *= this.FrictionCoefficient;
+            _acceleration *= _frictionCoefficient;
+            Velocity *= _frictionCoefficient;
         }
 
         /// <summary>
@@ -181,13 +176,13 @@ namespace Engine.Physics.Bodies
         private void LimitAcceleration()
         {
             // Calculate the current acceleration magnitude
-            double magnitude = Math.Sqrt(Math.Pow(this.Acceleration.X, 2.0) + Math.Pow(this.Acceleration.Y, 2.0));
+            double magnitude = Math.Sqrt(Math.Pow(_acceleration.X, 2.0) + Math.Pow(_acceleration.Y, 2.0));
 
             // If the current magnitude is greater than the limit, then adjust acceleration so that the magnitude is equal to the limit
-            if (magnitude > this.MaxSpeed + 0.1f)
+            if (magnitude > _maxSpeed + 0.1f)
             {
-                this.Acceleration.Normalize();
-                this.Acceleration *= this.MaxSpeed;
+                _acceleration.Normalize();
+                _acceleration *= _maxSpeed;
             }
         }
 
@@ -197,13 +192,13 @@ namespace Engine.Physics.Bodies
         private void LimitVelocity()
         {
             // Calculate the current speed
-            double speed = Math.Sqrt(Math.Pow(this.Velocity.X, 2.0) + Math.Pow(this.Velocity.Y, 2.0));
+            double speed = Math.Sqrt(Math.Pow(Velocity.X, 2.0) + Math.Pow(Velocity.Y, 2.0));
 
             // If the current speed is greater than the speed limit, then adjust velocity so that the speed is equal to the speed limit
-            if (speed > this.MaxSpeed + 0.1f)
+            if (speed > _maxSpeed + 0.1f)
             {
-                this.Velocity.Normalize();
-                this.Velocity *= this.MaxSpeed;
+                Velocity.Normalize();
+                Velocity *= _maxSpeed;
             }
         }
 
@@ -212,8 +207,8 @@ namespace Engine.Physics.Bodies
         /// </summary>
         private void UpdatePosition()
         {
-            this.Velocity += this.Acceleration;
-            this.Position += this.Velocity;
+            Velocity += _acceleration;
+            Position += Velocity;
         }
 
         /// <summary>
@@ -222,7 +217,7 @@ namespace Engine.Physics.Bodies
         /// <param name="force"></param>
         public void ApplyForce(Vector2 force)
         {
-            this.Acceleration += force / this.Mass;
+            _acceleration += force / _mass;
         }
 
         /// <summary>
@@ -236,17 +231,17 @@ namespace Engine.Physics.Bodies
 
             Type bodyType = body.GetType();
 
-            if (bodyType.Equals(typeof(CircleBody)))
+            if (bodyType == typeof(CircleBody))
             {
-                result = this.DetectCollision((CircleBody)body);
+                result = DetectCollision((CircleBody) body);
             }
-            else if (bodyType.Equals(typeof(RectangleBody)))
+            else if (bodyType == typeof(RectangleBody))
             {
-                result = this.DetectCollision((RectangleBody)body);
+                result = DetectCollision((RectangleBody) body);
             }
-            else if (bodyType.Equals(typeof(LineBody)))
+            else if (bodyType == typeof(LineBody))
             {
-                result = this.DetectCollision((LineBody)body);
+                result = DetectCollision((LineBody) body);
             }
 
             return result;
