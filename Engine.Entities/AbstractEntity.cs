@@ -1,11 +1,10 @@
-﻿using Engine.Drawing;
-using Engine.Entities.Graphs;
+﻿using System;
+using Engine.Drawing;
 using Engine.Physics.Bodies;
 using Engine.Physics.Bodies.Collisions;
 using Engine.Physics.Bodies.Collisions.EventHandlers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 
 namespace Engine.Entities
 {
@@ -22,7 +21,7 @@ namespace Engine.Entities
         /// <returns></returns>
         public AbstractBody GetBody()
         {
-            return this.Body;
+            return Body;
         }
 
         /// <summary>
@@ -41,7 +40,7 @@ namespace Engine.Entities
         /// <param name="collisionBehaviors"></param>
         public void SetCollisionBehaviors(ICollisionBehaviors collisionBehaviors)
         {
-            this._collisionBehaviors = collisionBehaviors;
+            _collisionBehaviors = collisionBehaviors;
         }
 
         /// <summary>
@@ -50,19 +49,20 @@ namespace Engine.Entities
         /// <param name="body"></param>
         /// <param name="model"></param>
         /// <param name="collisionBehaviors"></param>
-        public AbstractEntity(AbstractBody body, PrimitiveBuilder model, ICollisionBehaviors collisionBehaviors = null)
+        protected AbstractEntity(AbstractBody body, PrimitiveBuilder model,
+            ICollisionBehaviors collisionBehaviors = null)
         {
             // Set body
-            this.Body = body;
+            Body = body;
 
             // Set model
-            this._model = model;
+            _model = model;
 
             // Subscribe to collision event
             CollisionPool.Instance.CollisionDetected += CollisionDetected;
 
             // Set collision behaviors
-            this._collisionBehaviors = collisionBehaviors;
+            _collisionBehaviors = collisionBehaviors;
         }
 
         /// <summary>
@@ -70,8 +70,8 @@ namespace Engine.Entities
         /// </summary>
         public virtual void Update()
         {
-            this.Body.Update();
-            this._model.SetPosition(this.Body.GetPosition());
+            Body.Update();
+            _model.SetPosition(Body.GetPosition());
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Engine.Entities
         /// <param name="where"></param>
         public void Look(Vector2 where)
         {
-            this._model.Rotate((float)Math.Atan2(where.Y, where.X));
+            _model.Rotate((float) Math.Atan2(where.Y, where.X));
         }
 
         /// <summary>
@@ -91,10 +91,7 @@ namespace Engine.Entities
         /// <param name="spriteBatch"></param>
         public virtual void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect, SpriteBatch spriteBatch)
         {
-            if (this._model != null)
-            {
-                this._model.Draw(graphicsDevice, basicEffect);
-            }
+            _model?.Draw(graphicsDevice, basicEffect);
         }
 
         /// <summary>
@@ -103,13 +100,13 @@ namespace Engine.Entities
         /// <param name="e"></param>
         private void CollisionDetected(CollisionDetectedEventArgs e)
         {
-            if (e.Body1 == this.Body)
+            if (e.Body1 == Body)
             {
-                this.ReactToCollision(EntityTable.Instance.Get(e.Body2));
+                ReactToCollision(EntityTable.Instance.Get(e.Body2));
             }
-            else if (e.Body2 == this.Body)
+            else if (e.Body2 == Body)
             {
-                this.ReactToCollision(EntityTable.Instance.Get(e.Body1));
+                ReactToCollision(EntityTable.Instance.Get(e.Body1));
             }
         }
 
@@ -119,25 +116,25 @@ namespace Engine.Entities
         /// <param name="entity"></param>
         private void ReactToCollision(AbstractEntity entity)
         {
-            System.Type entityType = entity.GetType();
+            Type entityType = entity.GetType();
 
-            if (this._collisionBehaviors != null)
+            if (_collisionBehaviors != null)
             {
                 if (entityType.IsSubclassOf(typeof(AbstractPlayer)))
                 {
-                    this._collisionBehaviors.ReactToCollision((AbstractPlayer)entity);
+                    _collisionBehaviors.ReactToCollision((AbstractPlayer) entity);
                 }
                 else if (entityType.IsSubclassOf(typeof(AbstractGun)))
                 {
-                    this._collisionBehaviors.ReactToCollision((AbstractGun)entity);
+                    _collisionBehaviors.ReactToCollision((AbstractGun) entity);
                 }
                 else if (entityType.IsSubclassOf(typeof(AbstractBullet)))
                 {
-                    this._collisionBehaviors.ReactToCollision((AbstractBullet)entity);
+                    _collisionBehaviors.ReactToCollision((AbstractBullet) entity);
                 }
                 else if (entityType.IsSubclassOf(typeof(AbstractWall)))
                 {
-                    this._collisionBehaviors.ReactToCollision((AbstractWall)entity);
+                    _collisionBehaviors.ReactToCollision((AbstractWall) entity);
                 }
             }
         }

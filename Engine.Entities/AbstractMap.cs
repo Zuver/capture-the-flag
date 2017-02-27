@@ -36,7 +36,7 @@ namespace Engine.Entities
         public void AddWall(AbstractWall wall)
         {
             Walls.Add(wall);
-            NodeGraph.Instance.AddNodes(Node.Construct(wall.GetBody(), (int) AppSettingsFacade.PlayerRadius, 50));
+            NodeGraph.Instance.AddNodes(Node.Construct(wall.GetBody(), AppSettingsFacade.WallBufferInPixels, 50));
             ConstructNodeGraphEdges();
             NodeGraph.Instance.BuildShortestPathData();
         }

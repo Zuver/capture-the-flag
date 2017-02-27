@@ -86,5 +86,10 @@ namespace Engine.Utilities
         /// Player respawn time in seconds
         /// </summary>
         public static int PlayerRespawnTimeInSeconds => int.Parse(_appSettings["PlayerRespawnTimeInSeconds"]);
+
+        /// <summary>
+        /// Minimum distance between a point on a wall and a node in the navigation mesh
+        /// </summary>
+        public static int WallBufferInPixels => int.Parse(_appSettings["WallBufferInPixels"]);
     }
 }

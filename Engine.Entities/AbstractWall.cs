@@ -1,10 +1,5 @@
 ﻿using Engine.Drawing;
 using Engine.Physics.Bodies;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Entities
 {
@@ -15,10 +10,10 @@ namespace Engine.Entities
         /// </summary>
         /// <param name="body"></param>
         /// <param name="model"></param>
-        public AbstractWall(AbstractBody body, PrimitiveBuilder model)
+        protected AbstractWall(AbstractBody body, PrimitiveBuilder model)
             : base(body, model)
         {
-            EntityTable.Instance.Add(this.Body, this);
+            EntityTable.Instance.Add(Body, this);
         }
     }
 }
