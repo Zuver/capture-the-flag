@@ -30,7 +30,7 @@ namespace CaptureTheFlag.Entities.Screens
         private GameScreen()
         {
             Map = new MyMap(new Vector2(AppSettingsFacade.WindowWidth, AppSettingsFacade.WindowHeight));
-            Camera2D.Instance.Initialize(Vector2.Zero, 20.0f, 3.0f);
+            Camera2D.Instance.Initialize(Vector2.Zero, 2.0f, 1.0f);
         }
 
         /// <summary>

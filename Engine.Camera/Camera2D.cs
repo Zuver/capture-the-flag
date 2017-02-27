@@ -1,6 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using System;
 
 namespace Engine.Camera
 {
@@ -9,28 +7,29 @@ namespace Engine.Camera
         /// <summary>
         /// This is a singleton class
         /// </summary>
-        private static Camera2D instance;
+        private static Camera2D _instance;
+
         public static Camera2D Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance == null)
                 {
-                    instance = new Camera2D();
+                    _instance = new Camera2D();
                 }
 
-                return instance;
+                return _instance;
             }
         }
 
-        private Vector2 TargetPosition;
-        private Vector2 Position;
+        private Vector2 _targetPosition;
+        private Vector2 _position;
 
-        private Vector2 Velocity;
-        private float MaxPanSpeed;
+        private Vector2 _velocity;
+        private float _maxPanSpeed;
 
-        private Vector2 Acceleration;
-        private float MaxPanAcceleration;
+        private Vector2 _acceleration;
+        private float _maxPanAcceleration;
 
         /// <summary>
         /// Constructor
@@ -38,10 +37,10 @@ namespace Engine.Camera
         private Camera2D()
         {
             // Put this camera in a state of rest
-            this.TargetPosition = Vector2.Zero;
-            this.Position = Vector2.Zero;
-            this.Velocity = Vector2.Zero;
-            this.Acceleration = Vector2.Zero;
+            _targetPosition = Vector2.Zero;
+            _position = Vector2.Zero;
+            _velocity = Vector2.Zero;
+            _acceleration = Vector2.Zero;
         }
 
         /// <summary>
@@ -52,9 +51,9 @@ namespace Engine.Camera
         /// <param name="maxPanAcceleration"></param>
         public void Initialize(Vector2 position, float maxPanSpeed, float maxPanAcceleration)
         {
-            this.Position = position;
-            this.MaxPanSpeed = maxPanSpeed;
-            this.MaxPanAcceleration = maxPanAcceleration;
+            _position = position;
+            _maxPanSpeed = maxPanSpeed;
+            _maxPanAcceleration = maxPanAcceleration;
         }
 
         /// <summary>
@@ -63,7 +62,7 @@ namespace Engine.Camera
         /// <param name="targetPosition"></param>
         public void SetTargetPosition(Vector2 targetPosition)
         {
-            this.TargetPosition = targetPosition;
+            _targetPosition = targetPosition;
         }
 
         /// <summary>
@@ -72,7 +71,7 @@ namespace Engine.Camera
         /// <returns></returns>
         public Vector2 GetPosition()
         {
-            return this.Position;
+            return _position;
         }
 
         /// <summary>
@@ -82,20 +81,20 @@ namespace Engine.Camera
         {
             float epsilon = 5f;
 
-            if (Vector2.DistanceSquared(this.Position, this.TargetPosition) > epsilon * epsilon)
+            if (Vector2.DistanceSquared(_position, _targetPosition) > epsilon * epsilon)
             {
-                this.Acceleration += this.TargetPosition - this.Position;
+                _acceleration += _targetPosition - _position;
 
-                this.LimitAcceleration();
-                this.Velocity += this.Acceleration;
+                LimitAcceleration();
+                _velocity += _acceleration;
 
-                this.LimitVelocity();
-                this.Position += this.Velocity;
+                LimitVelocity();
+                _position += _velocity;
             }
             else
             {
-                this.Acceleration = Vector2.Zero;
-                this.Velocity = Vector2.Zero;
+                _acceleration = Vector2.Zero;
+                _velocity = Vector2.Zero;
             }
         }
 
@@ -104,8 +103,8 @@ namespace Engine.Camera
         /// </summary>
         public void Freeze()
         {
-            this.Velocity = Vector2.Zero;
-            this.Acceleration = Vector2.Zero;
+            _velocity = Vector2.Zero;
+            _acceleration = Vector2.Zero;
         }
 
         /// <summary>
@@ -113,20 +112,20 @@ namespace Engine.Camera
         /// </summary>
         private void LimitVelocity()
         {
-            if (this.Velocity.LengthSquared() > this.MaxPanSpeed * this.MaxPanSpeed)
+            if (_velocity.LengthSquared() > _maxPanSpeed * _maxPanSpeed)
             {
-                this.Velocity.Normalize();
-                this.Velocity *= this.MaxPanSpeed;
+                _velocity.Normalize();
+                _velocity *= _maxPanSpeed;
             }
 
-            Vector2 toTarget = this.TargetPosition - this.Position;
+            Vector2 toTarget = _targetPosition - _position;
 
             if (float.IsNaN(toTarget.X))
                 toTarget.X = 0f;
             if (float.IsNaN(toTarget.Y))
                 toTarget.Y = 0f;
 
-            this.Velocity *= toTarget.Length() / 50f;
+            _velocity *= toTarget.Length() / 50f;
         }
 
         /// <summary>
@@ -134,10 +133,10 @@ namespace Engine.Camera
         /// </summary>
         private void LimitAcceleration()
         {
-            if (this.Acceleration.LengthSquared() > this.MaxPanAcceleration * this.MaxPanAcceleration)
+            if (_acceleration.LengthSquared() > _maxPanAcceleration * _maxPanAcceleration)
             {
-                this.Acceleration.Normalize();
-                this.Acceleration *= this.MaxPanAcceleration;
+                _acceleration.Normalize();
+                _acceleration *= _maxPanAcceleration;
             }
         }
     }
