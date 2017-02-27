@@ -1,13 +1,10 @@
-﻿using CaptureTheFlag.Entities.Bullets;
+﻿using System;
+using CaptureTheFlag.Entities.Bullets;
 using Engine.Drawing;
 using Engine.Entities;
 using Engine.Physics.Bodies;
+using Engine.Utilities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CaptureTheFlag.Entities.Guns
 {
@@ -16,9 +13,9 @@ namespace CaptureTheFlag.Entities.Guns
         #region Default ShotGun attributes
 
         // Tweak these to change the game experience
-        private static double BulletDelayInMilliseconds = 800.0;
-        private static float BulletSpeed = 24.0f;
-        private static UInt16 BulletsPerShot = 5;
+        private static double BulletDelayInMilliseconds = 400.0;
+        private static float BulletSpeed = 10.0f;
+        private static ushort BulletsPerShot = 7;
         private static double RadiansOfBulletSpread = Math.PI / 12; // Pi / 12 is 15 degrees
 
         #endregion Default ShotGun attributes
@@ -31,7 +28,7 @@ namespace CaptureTheFlag.Entities.Guns
         public ShotGun(AbstractBody body, PrimitiveBuilder model)
             : base(body, model, BulletDelayInMilliseconds)
         {
-            Bullet[] bullets = new Bullet[100];
+            AbstractBullet[] bullets = new AbstractBullet[100];
             for (int i = 0; i < bullets.Length; i++)
             {
                 PrimitiveBuilder bulletModel = new PrimitiveBuilder(Color.Yellow);
@@ -39,8 +36,8 @@ namespace CaptureTheFlag.Entities.Guns
                 bullets[i] = new Bullet(BodyFactory.Circle(false, 1f, BulletSpeed, 1f, false, 1f), bulletModel, this);
             }
 
-            this.SetBullets(bullets);
-            this.SetCollisionBehaviors(new CollisionBehaviors(this));
+            SetBullets(bullets);
+            SetCollisionBehaviors(new CollisionBehaviors(this));
         }
 
         /// <summary>
@@ -74,10 +71,10 @@ namespace CaptureTheFlag.Entities.Guns
         public override void Fire(Vector2 direction)
         {
             // Get current game time
-            double currentGameTime = Engine.Utilities.TimeHelper.GetCurrentGameTime();
+            double currentGameTime = TimeHelper.GetCurrentGameTime();
 
             // Check for delay
-            if (currentGameTime - this.LastTimeBulletFired > this.DelayInMilliseconds)
+            if (currentGameTime - LastTimeBulletFired > DelayInMilliseconds)
             {
                 double directionInRadians = Math.Atan2(direction.Y, direction.X);
 
@@ -89,12 +86,12 @@ namespace CaptureTheFlag.Entities.Guns
                 for (int i = 0; i < BulletsPerShot; i++)
                 {
                     direction = new Vector2(
-                        (float)Math.Cos(initialDirection + (i + 1) * (RadiansOfBulletSpread / (BulletsPerShot + 1))),
-                        (float)Math.Sin(initialDirection + (i + 1) * (RadiansOfBulletSpread / (BulletsPerShot + 1))));
+                        (float) Math.Cos(initialDirection + (i + 1) * (RadiansOfBulletSpread / (BulletsPerShot + 1))),
+                        (float) Math.Sin(initialDirection + (i + 1) * (RadiansOfBulletSpread / (BulletsPerShot + 1))));
 
-                    this.Bullets[this.BulletIndex].Fire(this.Body.GetPosition(), direction, BulletSpeed);
-                    this.IncrementBulletIndex();
-                    this.LastTimeBulletFired = currentGameTime;
+                    Bullets[BulletIndex].Fire(Body.GetPosition(), direction, BulletSpeed);
+                    IncrementBulletIndex();
+                    LastTimeBulletFired = currentGameTime;
                 }
             }
         }

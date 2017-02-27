@@ -1,19 +1,17 @@
-﻿using Engine.Drawing;
-using Engine.Physics.Bodies;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Engine.Utilities;
-using CaptureTheFlag.Entities.Players;
-using CaptureTheFlag.Entities.Bullets;
+﻿using CaptureTheFlag.Entities.Bullets;
+using Engine.Drawing;
 using Engine.Entities;
+using Engine.Physics.Bodies;
+using Engine.Utilities;
+using Microsoft.Xna.Framework;
 
 namespace CaptureTheFlag.Entities.Guns
 {
     public class WeakGun : AbstractGun
     {
         // Tweak these to change the game experience
-        private static double BulletDelayInMilliseconds = 200.0;
-        private static float BulletSpeed = 24.0f;
+        private static double BulletDelayInMilliseconds = 150.0;
+        private static float BulletSpeed = 10.0f;
 
         /// <summary>
         /// Constructor
@@ -23,7 +21,7 @@ namespace CaptureTheFlag.Entities.Guns
         public WeakGun(AbstractBody body, PrimitiveBuilder model)
             : base(body, model, BulletDelayInMilliseconds)
         {
-            Bullet[] bullets = new Bullet[100];
+            AbstractBullet[] bullets = new AbstractBullet[100];
             for (int i = 0; i < bullets.Length; i++)
             {
                 PrimitiveBuilder bulletModel = new PrimitiveBuilder(Color.Yellow);
@@ -31,8 +29,8 @@ namespace CaptureTheFlag.Entities.Guns
                 bullets[i] = new Bullet(BodyFactory.Circle(false, 1f, BulletSpeed, 1f, false, 1f), bulletModel, this);
             }
 
-            this.SetBullets(bullets);
-            this.SetCollisionBehaviors(new CollisionBehaviors(this));
+            SetBullets(bullets);
+            SetCollisionBehaviors(new CollisionBehaviors(this));
         }
 
         /// <summary>
@@ -64,14 +62,14 @@ namespace CaptureTheFlag.Entities.Guns
         public override void Fire(Vector2 direction)
         {
             // Get current game time
-            double currentGameTime = Engine.Utilities.TimeHelper.GetCurrentGameTime();
+            double currentGameTime = TimeHelper.GetCurrentGameTime();
 
             // Check for delay
-            if (currentGameTime - this.LastTimeBulletFired > this.DelayInMilliseconds)
+            if (currentGameTime - LastTimeBulletFired > DelayInMilliseconds)
             {
-                this.Bullets[this.BulletIndex].Fire(this.Body.GetPosition(), direction, BulletSpeed);
-                this.IncrementBulletIndex();
-                this.LastTimeBulletFired = currentGameTime;
+                Bullets[BulletIndex].Fire(Body.GetPosition(), direction, BulletSpeed);
+                IncrementBulletIndex();
+                LastTimeBulletFired = currentGameTime;
             }
         }
     }
