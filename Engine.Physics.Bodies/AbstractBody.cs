@@ -152,9 +152,9 @@ namespace Engine.Physics.Bodies
         }
 
         /// <summary>
-        /// Reset
+        /// Freeze
         /// </summary>
-        public void Reset()
+        public void Freeze()
         {
             _acceleration = Vector2.Zero;
             Velocity = Vector2.Zero;

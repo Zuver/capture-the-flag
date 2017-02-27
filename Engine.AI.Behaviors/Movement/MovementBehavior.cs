@@ -1,13 +1,9 @@
-﻿using Engine.Drawing;
-using Engine.Entities;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Engine.Drawing;
 using Engine.Entities.Graphs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.AI.Behaviors.Movement
 {
@@ -16,7 +12,7 @@ namespace Engine.AI.Behaviors.Movement
         /// <summary>
         /// Goal
         /// </summary>
-        private Vector2 Goal;
+        private Vector2 _goal;
 
         /// <summary>
         /// Get goal
@@ -24,7 +20,7 @@ namespace Engine.AI.Behaviors.Movement
         /// <returns></returns>
         public Vector2 GetGoal()
         {
-            return this.Goal;
+            return _goal;
         }
 
         /// <summary>
@@ -34,14 +30,14 @@ namespace Engine.AI.Behaviors.Movement
         /// <param name="routeToGoal"></param>
         public void SetGoal(Vector2 goalPosition, List<Node> routeToGoal)
         {
-            this.Goal = goalPosition;
+            _goal = goalPosition;
 
             foreach (Node node in routeToGoal)
             {
-                this.EnqueueWaypoint(node.Position);
+                EnqueueWaypoint(node.Position);
             }
 
-            this.EnqueueWaypoint(goalPosition);
+            EnqueueWaypoint(goalPosition);
         }
 
         /// <summary>
@@ -50,13 +46,13 @@ namespace Engine.AI.Behaviors.Movement
         /// <returns></returns>
         public bool HasGoal()
         {
-            return !this.Goal.Equals(Vector2.Zero);
+            return !_goal.Equals(Vector2.Zero);
         }
 
         /// <summary>
         /// Target
         /// </summary>
-        private Vector2 Target;
+        private Vector2 _target;
 
         /// <summary>
         /// Get target
@@ -64,7 +60,7 @@ namespace Engine.AI.Behaviors.Movement
         /// <returns></returns>
         public Vector2 GetTarget()
         {
-            return this.Target;
+            return _target;
         }
 
         /// <summary>
@@ -73,14 +69,14 @@ namespace Engine.AI.Behaviors.Movement
         /// <param name="target"></param>
         public void SetTarget(Vector2 target)
         {
-            this.Path.Clear();
-            this.Target = target;
+            _path.Clear();
+            _target = target;
         }
 
         /// <summary>
         /// Path
         /// </summary>
-        private Queue<Vector2> Path;
+        private readonly Queue<Vector2> _path;
 
         /// <summary>
         /// Enqueue waypoint
@@ -88,31 +84,31 @@ namespace Engine.AI.Behaviors.Movement
         /// <param name="waypointPosition"></param>
         private void EnqueueWaypoint(Vector2 waypointPosition)
         {
-            this.Path.Enqueue(waypointPosition);
+            _path.Enqueue(waypointPosition);
 
-            if (this.Path.Count > 1)
+            if (_path.Count > 1)
             {
                 // Add drawable line (for debugging)
-                this.DrawablePathLines.Add(PrimitiveFactory.Line(Color.Green, this.Path.ElementAt(this.Path.Count - 2), this.Path.Last()));
+                _drawablePathLines.Add(PrimitiveFactory.Line(Color.Green, _path.ElementAt(_path.Count - 2), _path.Last()));
             }
         }
 
         /// <summary>
         /// Drawable path lines (for debugging)
         /// </summary>
-        private List<LinePrimitive> DrawablePathLines;
+        private readonly List<LinePrimitive> _drawablePathLines;
 
         /// <summary>
         /// Movement state
         /// </summary>
-        private MovementState State;
+        private MovementState _state;
 
         /// <summary>
         /// Set state
         /// </summary>
         private void SetState(MovementState state)
         {
-            this.State = state;
+            _state = state;
         }
 
         /// <summary>
@@ -120,10 +116,10 @@ namespace Engine.AI.Behaviors.Movement
         /// </summary>
         public MovementBehavior()
         {
-            this.Target = Vector2.Zero;
-            this.Path = new Queue<Vector2>();
-            this.DrawablePathLines = new List<LinePrimitive>();
-            this.State = MovementState.ApproachTarget;
+            _target = Vector2.Zero;
+            _path = new Queue<Vector2>();
+            _drawablePathLines = new List<LinePrimitive>();
+            _state = MovementState.ApproachTarget;
         }
 
         /// <summary>
@@ -136,15 +132,13 @@ namespace Engine.AI.Behaviors.Movement
         {
             Vector2 result = Vector2.Zero;
 
-            switch (this.State)
+            switch (_state)
             {
                 case MovementState.SeekTarget:
-                    result = this.SeekTarget(position);
+                    result = SeekTarget(position);
                     break;
                 case MovementState.ApproachTarget:
-                    result = this.ApproachTarget(position, velocity);
-                    break;
-                default:
+                    result = ApproachTarget(velocity);
                     break;
             }
 
@@ -152,14 +146,14 @@ namespace Engine.AI.Behaviors.Movement
         }
 
         /// <summary>
-        /// Reset state
+        /// Freeze state
         /// </summary>
         public void Reset()
         {
-            this.Target = Vector2.Zero;
-            this.Path.Clear();
-            this.DrawablePathLines.Clear();
-            this.State = MovementState.ApproachTarget;
+            _target = Vector2.Zero;
+            _path.Clear();
+            _drawablePathLines.Clear();
+            _state = MovementState.ApproachTarget;
         }
 
         /// <summary>
@@ -169,33 +163,33 @@ namespace Engine.AI.Behaviors.Movement
         /// <param name="velocity"></param>
         public void Update(Vector2 position, Vector2 velocity)
         {
-            if ((this.Target - position).Length() < 25f)
+            if ((_target - position).Length() < 25f)
             {
-                this.SetState(MovementState.ApproachTarget);
+                SetState(MovementState.ApproachTarget);
             }
         }
 
         /// <summary>
         /// Target reached
         /// </summary>
-        private void OnTargetReached(Vector2 position)
+        private void OnTargetReached()
         {
             // If there is at least one item in the path, use it as the next target position
-            if (this.Path != null && this.Path.Count > 0)
+            if (_path != null && _path.Count > 0)
             {
-                this.Target = this.Path.Dequeue();
+                _target = _path.Dequeue();
 
-                if (this.DrawablePathLines.Count > 0)
+                if (_drawablePathLines.Count > 0)
                 {
-                    this.DrawablePathLines.RemoveAt(0);
+                    _drawablePathLines.RemoveAt(0);
                 }
 
-                this.SetState(MovementState.SeekTarget);
+                SetState(MovementState.SeekTarget);
             }
             else
             {
-                this.Goal = Vector2.Zero;
-                this.SetState(MovementState.ApproachTarget);
+                _goal = Vector2.Zero;
+                SetState(MovementState.ApproachTarget);
             }
         }
 
@@ -206,7 +200,7 @@ namespace Engine.AI.Behaviors.Movement
         /// <returns></returns>
         private Vector2 SeekTarget(Vector2 position)
         {
-            Vector2 positionToTarget = this.Target - position;
+            Vector2 positionToTarget = _target - position;
             positionToTarget.Normalize();
             return positionToTarget;
         }
@@ -214,14 +208,13 @@ namespace Engine.AI.Behaviors.Movement
         /// <summary>
         /// Approach target
         /// </summary>
-        /// <param name="position"></param>
         /// <param name="velocity"></param>
         /// <returns></returns>
-        private Vector2 ApproachTarget(Vector2 position, Vector2 velocity)
+        private Vector2 ApproachTarget(Vector2 velocity)
         {
             if (velocity.LengthSquared() < 0.5f)
             {
-                this.OnTargetReached(position);
+                OnTargetReached();
             }
 
             return Vector2.Zero;
@@ -235,7 +228,7 @@ namespace Engine.AI.Behaviors.Movement
         /// <param name="spriteBatch"></param>
         public void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect, SpriteBatch spriteBatch)
         {
-            foreach (LinePrimitive drawablePathLine in this.DrawablePathLines)
+            foreach (LinePrimitive drawablePathLine in _drawablePathLines)
             {
                 drawablePathLine.Draw(graphicsDevice, basicEffect);
             }

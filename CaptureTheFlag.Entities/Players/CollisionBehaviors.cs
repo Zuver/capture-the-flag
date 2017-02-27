@@ -1,11 +1,6 @@
 ﻿using Engine.Entities;
 using Engine.Physics.Bodies;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CaptureTheFlag.Entities.Players
 {
@@ -14,7 +9,7 @@ namespace CaptureTheFlag.Entities.Players
         /// <summary>
         /// Player
         /// </summary>
-        private AbstractPlayer Player;
+        private readonly AbstractPlayer _player;
 
         /// <summary>
         /// Constructor
@@ -22,7 +17,7 @@ namespace CaptureTheFlag.Entities.Players
         /// <param name="player"></param>
         public CollisionBehaviors(AbstractPlayer player)
         {
-            this.Player = player;
+            _player = player;
         }
 
         /// <summary>
@@ -31,18 +26,7 @@ namespace CaptureTheFlag.Entities.Players
         /// <param name="player"></param>
         public void ReactToCollision(AbstractPlayer player)
         {
-            // TODO: Fix this
-            
-            //Vector2 closestPoint = player.GetBody().GetClosestPointOnPerimeter(this.Player.GetBody().GetPosition());
-            //Vector2 closestPointToPosition = this.Player.GetBody().GetPosition() - closestPoint;
-            //closestPointToPosition.Normalize();
-
-            //if (float.IsNaN(closestPointToPosition.X))
-            //    closestPointToPosition.X = 0f;
-            //if (float.IsNaN(closestPointToPosition.Y))
-            //    closestPointToPosition.Y = 0f;
-
-            //this.Player.GetBody().SetPosition(closestPoint + closestPointToPosition * ((CircleBody)this.Player.GetBody()).GetRadius());
+            // Players will just go through each other
         }
 
         /// <summary>
@@ -51,7 +35,7 @@ namespace CaptureTheFlag.Entities.Players
         /// <param name="gun"></param>
         public void ReactToCollision(AbstractGun gun)
         {
-            this.Player.PickUpGun(gun);
+            _player.PickUpGun(gun);
         }
 
         /// <summary>
@@ -60,9 +44,9 @@ namespace CaptureTheFlag.Entities.Players
         /// <param name="bullet"></param>
         public void ReactToCollision(AbstractBullet bullet)
         {
-            if (bullet.GetGun() != this.Player.GetGun())
+            if (bullet.GetGun() != _player.GetGun())
             {
-                this.Player.DecreaseHealth(5);
+                _player.DecreaseHealth(5);
                 bullet.Destroy();
             }
         }
@@ -73,8 +57,8 @@ namespace CaptureTheFlag.Entities.Players
         /// <param name="wall"></param>
         public void ReactToCollision(AbstractWall wall)
         {
-            Vector2 closestPoint = wall.GetBody().GetClosestPointOnPerimeter(this.Player.GetBody().GetPosition());
-            Vector2 closestPointToPosition = this.Player.GetBody().GetPosition() - closestPoint;
+            Vector2 closestPoint = wall.GetBody().GetClosestPointOnPerimeter(_player.GetBody().GetPosition());
+            Vector2 closestPointToPosition = _player.GetBody().GetPosition() - closestPoint;
             closestPointToPosition.Normalize();
 
             if (float.IsNaN(closestPointToPosition.X))
@@ -82,7 +66,8 @@ namespace CaptureTheFlag.Entities.Players
             if (float.IsNaN(closestPointToPosition.Y))
                 closestPointToPosition.Y = 0f;
 
-            this.Player.GetBody().SetPosition(closestPoint + closestPointToPosition * ((CircleBody)this.Player.GetBody()).GetRadius());
+            _player.GetBody()
+                .SetPosition(closestPoint + closestPointToPosition * ((CircleBody) _player.GetBody()).GetRadius());
         }
     }
 }

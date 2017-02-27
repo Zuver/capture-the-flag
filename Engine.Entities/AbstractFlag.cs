@@ -1,11 +1,6 @@
 ﻿using Engine.Drawing;
 using Engine.Physics.Bodies;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Entities
 {
@@ -22,7 +17,7 @@ namespace Engine.Entities
         /// <returns></returns>
         public AbstractTeam GetTeam()
         {
-            return this.Team;
+            return Team;
         }
 
         /// <summary>
@@ -31,11 +26,11 @@ namespace Engine.Entities
         protected Vector2 InitialPosition;
 
         /// <summary>
-        /// Reset position
+        /// Freeze position
         /// </summary>
         public void ResetPosition()
         {
-            this.Body.SetPosition(this.InitialPosition);
+            Body.SetPosition(InitialPosition);
         }
 
         /// <summary>
@@ -44,7 +39,7 @@ namespace Engine.Entities
         /// <returns></returns>
         public bool IsReset()
         {
-            return (this.InitialPosition - this.Body.GetPosition()).LengthSquared() < float.Epsilon;
+            return (InitialPosition - Body.GetPosition()).LengthSquared() < float.Epsilon;
         }
 
         /// <summary>
@@ -56,9 +51,9 @@ namespace Engine.Entities
         public AbstractFlag(AbstractBody body, PrimitiveBuilder model, AbstractTeam team)
             : base(body, model)
         {
-            this.Team = team;
-            this.InitialPosition = body.GetPosition();
-            EntityTable.Instance.Add(this.Body, this);
+            Team = team;
+            InitialPosition = body.GetPosition();
+            EntityTable.Instance.Add(Body, this);
         }
     }
 }

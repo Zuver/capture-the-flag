@@ -1,5 +1,6 @@
-﻿using CaptureTheFlag.Entities.Screens;
-using CaptureTheFlag.Entities.Walls;
+﻿using System;
+using System.Collections.Generic;
+using CaptureTheFlag.Entities.Screens;
 using Engine.AI.Behaviors.Attack;
 using Engine.AI.Behaviors.Movement;
 using Engine.Camera;
@@ -11,11 +12,6 @@ using Engine.Physics.Bodies;
 using Engine.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CaptureTheFlag.Entities.Players
 {
@@ -24,12 +20,12 @@ namespace CaptureTheFlag.Entities.Players
         /// <summary>
         /// Movement behavior
         /// </summary>
-        private MovementBehavior MovementBehavior;
+        private readonly MovementBehavior _movementBehavior;
 
         /// <summary>
         /// Attack behavior
         /// </summary>
-        private AttackBehavior AttackBehavior;
+        private readonly AttackBehavior _attackBehavior;
 
         /// <summary>
         /// Constructor
@@ -41,9 +37,9 @@ namespace CaptureTheFlag.Entities.Players
         public BotPlayer(AbstractBody body, PrimitiveBuilder model, AbstractTeam team, AbstractTeam enemyTeam)
             : base(body, model, team, enemyTeam)
         {
-            this.SetCollisionBehaviors(new CollisionBehaviors(this));
-            this.MovementBehavior = new MovementBehavior();
-            this.AttackBehavior = new AttackBehavior();
+            SetCollisionBehaviors(new CollisionBehaviors(this));
+            _movementBehavior = new MovementBehavior();
+            _attackBehavior = new AttackBehavior();
         }
 
         /// <summary>
@@ -51,6 +47,7 @@ namespace CaptureTheFlag.Entities.Players
         /// </summary>
         /// <param name="color"></param>
         /// <param name="team"></param>
+        /// <param name="otherTeam"></param>
         /// <returns></returns>
         public static BotPlayer Default(Color color, AbstractTeam team, AbstractTeam otherTeam)
         {
@@ -78,16 +75,27 @@ namespace CaptureTheFlag.Entities.Players
         {
             base.Update();
 
-            this.UpdateMovementBehavior();
+            if (IsAlive)
+            {
+                UpdateMovementBehavior();
 
-            AbstractPlayer closestEnemyPlayer = GameScreen.Instance.Map.GetClosestPlayer(this.EnemyTeam, this.Body.GetPosition());
-            this.AttackBehavior.Target = closestEnemyPlayer;
+                AbstractPlayer closestEnemyPlayer = GameScreen.Instance.Map.GetClosestPlayer(EnemyTeam,
+                    Body.GetPosition());
+                _attackBehavior.Target = closestEnemyPlayer;
 
-            bool canSeeTarget = !GameScreen.Instance.Map.CheckLineCollision(this.Body.GetPosition(), this.AttackBehavior.Target.GetBody().GetPosition());
-            canSeeTarget &= Math.Abs(this.Body.GetPosition().X - this.AttackBehavior.Target.GetBody().GetPosition().X) < AppSettingsFacade.WindowWidth / 2;
-            canSeeTarget &= Math.Abs(this.Body.GetPosition().Y - this.AttackBehavior.Target.GetBody().GetPosition().Y) < AppSettingsFacade.WindowHeight / 2;
+                // Check for a clear line of sight from the bot to its target
+                bool canSeeTarget =
+                    !GameScreen.Instance.Map.CheckLineCollision(Body.GetPosition(),
+                        _attackBehavior.Target.GetBody().GetPosition());
 
-            this.AttackBehavior.Update(this.Body.GetPosition(), this.GetGun(), canSeeTarget);
+                // Check that the bot's viewport, which should match the dimensions of the player's viewport (no bot cheating), contains the target
+                canSeeTarget &= Math.Abs(Body.GetPosition().X - _attackBehavior.Target.GetBody().GetPosition().X) <
+                                (float) AppSettingsFacade.WindowWidth / 2;
+                canSeeTarget &= Math.Abs(Body.GetPosition().Y - _attackBehavior.Target.GetBody().GetPosition().Y) <
+                                (float) AppSettingsFacade.WindowHeight / 2;
+
+                _attackBehavior.Update(Body.GetPosition(), GetGun(), canSeeTarget);
+            }
         }
 
         /// <summary>
@@ -101,41 +109,41 @@ namespace CaptureTheFlag.Entities.Players
             // 3. Pursue other team's flag
             //     a. Go back to base if you have flag
 
-            AbstractGun closestGun = GameScreen.Instance.Map.GetClosestGun(this.Body.GetPosition());
+            AbstractGun closestGun = GameScreen.Instance.Map.GetClosestGun(Body.GetPosition());
 
-            if (!this.MovementBehavior.HasGoal())
+            if (!_movementBehavior.HasGoal())
             {
                 // If the bot does not have a gun he should seek one right away
-                if (this.Gun == null && closestGun != null)
+                if (Gun == null && closestGun != null)
                 {
                     Vector2 closestGunPosition = closestGun.GetBody().GetPosition();
-                    this.MovementBehavior.SetGoal(closestGunPosition, this.PlanRoute(closestGunPosition));
+                    _movementBehavior.SetGoal(closestGunPosition, PlanRoute(closestGunPosition));
                 }
-                else if (this.Gun != null && !this.Team.GetFlag().IsReset())
+                else if (Gun != null && !Team.GetFlag().IsReset())
                 {
-                    Vector2 flagPosition = this.Team.GetFlag().GetBody().GetPosition();
-                    this.MovementBehavior.SetGoal(flagPosition, this.PlanRoute(flagPosition));
+                    Vector2 flagPosition = Team.GetFlag().GetBody().GetPosition();
+                    _movementBehavior.SetGoal(flagPosition, PlanRoute(flagPosition));
                 }
-                else if (!this.HasFlag())
+                else if (!HasFlag())
                 {
-                    Vector2 enemyFlagPosition = this.EnemyTeam.GetFlag().GetBody().GetPosition();
-                    this.MovementBehavior.SetGoal(enemyFlagPosition, this.PlanRoute(enemyFlagPosition));
+                    Vector2 enemyFlagPosition = EnemyTeam.GetFlag().GetBody().GetPosition();
+                    _movementBehavior.SetGoal(enemyFlagPosition, PlanRoute(enemyFlagPosition));
                 }
-                else if (this.HasFlag())
+                else if (HasFlag())
                 {
-                    Vector2 teamBasePosition = this.Team.GetBasePosition();
-                    this.MovementBehavior.SetGoal(teamBasePosition, this.PlanRoute(teamBasePosition));
+                    Vector2 teamBasePosition = Team.GetBasePosition();
+                    _movementBehavior.SetGoal(teamBasePosition, PlanRoute(teamBasePosition));
                 }
             }
-            else if (this.CanSee(this.MovementBehavior.GetGoal()))
+            else if (CanSee(_movementBehavior.GetGoal()))
             {
-                this.MovementBehavior.SetTarget(this.MovementBehavior.GetGoal());
+                _movementBehavior.SetTarget(_movementBehavior.GetGoal());
             }
 
-            this.MovementBehavior.Update(this.Body.GetPosition(), this.Body.GetVelocity());
+            _movementBehavior.Update(Body.GetPosition(), Body.GetVelocity());
 
-            Vector2 force = this.MovementBehavior.GetForce(this.Body.GetPosition(), this.Body.GetVelocity());
-            this.Body.ApplyForce(force);
+            Vector2 force = _movementBehavior.GetForce(Body.GetPosition(), Body.GetVelocity());
+            Body.ApplyForce(force);
         }
 
         /// <summary>
@@ -145,11 +153,11 @@ namespace CaptureTheFlag.Entities.Players
         /// <returns></returns>
         protected List<Node> PlanRoute(Vector2 goalPosition)
         {
-            Vector2 currentPosition = this.GetBody().GetPosition();
+            Vector2 currentPosition = GetBody().GetPosition();
 
             return GameScreen.Instance.Map.GetShortestRoute(currentPosition, goalPosition);
         }
-        
+
         /// <summary>
         /// Can the bot "see" the given target position?
         /// </summary>
@@ -157,7 +165,7 @@ namespace CaptureTheFlag.Entities.Players
         /// <returns></returns>
         protected bool CanSee(Vector2 target)
         {
-            return !GameScreen.Instance.Map.CheckLineCollision(this.Body.GetPosition(), target);
+            return !GameScreen.Instance.Map.CheckLineCollision(Body.GetPosition(), target);
         }
 
         /// <summary>
@@ -167,8 +175,8 @@ namespace CaptureTheFlag.Entities.Players
         public override void Die(Vector2 where)
         {
             base.Die(where);
-            this.MovementBehavior.Reset();
-            this.AttackBehavior.Reset();
+            _movementBehavior.Reset();
+            _attackBehavior.Reset();
         }
 
         /// <summary>
@@ -183,13 +191,15 @@ namespace CaptureTheFlag.Entities.Players
 
             if (AppSettingsFacade.IsDebugModeOn)
             {
-                Vector2 target = this.MovementBehavior.GetTarget();
-                spriteBatch.DrawString(SpriteFontRepository.Instance.Get("debug"), "Movement target: <" + target.X + ", " + target.Y + ">", this.Body.GetPosition() - Camera2D.Instance.GetPosition() + new Vector2(30f, 40f), Color.Yellow);
+                Vector2 target = _movementBehavior.GetTarget();
+                spriteBatch.DrawString(SpriteFontRepository.Instance.Get("debug"),
+                    "Movement target: <" + target.X + ", " + target.Y + ">",
+                    Body.GetPosition() - Camera2D.Instance.GetPosition() + new Vector2(30f, 40f), Color.Yellow);
             }
 
             if (AppSettingsFacade.IsPathfindingDebugModeOn)
             {
-                this.MovementBehavior.Draw(graphicsDevice, basicEffect, spriteBatch);
+                _movementBehavior.Draw(graphicsDevice, basicEffect, spriteBatch);
             }
         }
     }

@@ -1,10 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Entities
 {
@@ -13,7 +9,7 @@ namespace Engine.Entities
         /// <summary>
         /// Name
         /// </summary>
-        private string Name;
+        private readonly string _name;
 
         /// <summary>
         /// Get name
@@ -21,13 +17,13 @@ namespace Engine.Entities
         /// <returns></returns>
         public string GetName()
         {
-            return this.Name;
+            return _name;
         }
 
         /// <summary>
         /// Base position
         /// </summary>
-        private Vector2 BasePosition;
+        private readonly Vector2 _basePosition;
 
         /// <summary>
         /// Get base position
@@ -35,7 +31,7 @@ namespace Engine.Entities
         /// <returns></returns>
         public Vector2 GetBasePosition()
         {
-            return this.BasePosition;
+            return _basePosition;
         }
 
         /// <summary>
@@ -46,7 +42,7 @@ namespace Engine.Entities
         /// <summary>
         /// Players
         /// </summary>
-        private List<AbstractPlayer> Players;
+        private readonly List<AbstractPlayer> _players;
 
         /// <summary>
         /// Get closest player
@@ -55,21 +51,21 @@ namespace Engine.Entities
         /// <returns></returns>
         public AbstractPlayer GetClosestPlayer(Vector2 position)
         {
-            if (this.Players.Count == 0)
+            if (_players.Count == 0)
             {
                 return null;
             }
 
-            AbstractPlayer result = this.Players[0];
+            AbstractPlayer result = _players[0];
             float distanceToClosestPlayerSquared = (position - result.GetBody().GetPosition()).LengthSquared();
 
-            for (int i = 1; i < this.Players.Count; i++)
+            for (int i = 1; i < _players.Count; i++)
             {
-                float distanceSquared = (position - this.Players[i].GetBody().GetPosition()).LengthSquared();
+                float distanceSquared = (position - _players[i].GetBody().GetPosition()).LengthSquared();
 
-                if (this.Players[i].IsAlive && (!result.IsAlive || distanceSquared < distanceToClosestPlayerSquared))
+                if (_players[i].IsAlive && (!result.IsAlive || distanceSquared < distanceToClosestPlayerSquared))
                 {
-                    result = this.Players[i];
+                    result = _players[i];
                     distanceToClosestPlayerSquared = distanceSquared;
                 }
             }
@@ -83,16 +79,16 @@ namespace Engine.Entities
         /// <param name="player"></param>
         public void AddPlayer(AbstractPlayer player)
         {
-            if (!this.Players.Contains(player))
+            if (!_players.Contains(player))
             {
-                this.Players.Add(player);
+                _players.Add(player);
             }
         }
 
         /// <summary>
-        /// Spawn points
+        /// Respawn points
         /// </summary>
-        private List<Vector2> SpawnPoints;
+        private readonly List<Vector2> _spawnPoints;
 
         /// <summary>
         /// Add spawn point
@@ -100,25 +96,25 @@ namespace Engine.Entities
         /// <param name="spawnPoint"></param>
         public void AddSpawnPoint(Vector2 spawnPoint)
         {
-            this.SpawnPoints.Add(spawnPoint);
+            _spawnPoints.Add(spawnPoint);
         }
 
         /// <summary>
         /// Next spawn point index
         /// </summary>
-        private int NextSpawnPointIndex;
+        private int _nextSpawnPointIndex;
 
         /// <summary>
         /// Get next spawn point
         /// </summary>
         public Vector2 GetNextSpawnPoint()
         {
-            Vector2 result = this.SpawnPoints[this.NextSpawnPointIndex];
-            this.NextSpawnPointIndex++;
+            Vector2 result = _spawnPoints[_nextSpawnPointIndex];
+            _nextSpawnPointIndex++;
 
-            if (this.NextSpawnPointIndex > this.SpawnPoints.Count - 1)
+            if (_nextSpawnPointIndex > _spawnPoints.Count - 1)
             {
-                this.NextSpawnPointIndex = 0;
+                _nextSpawnPointIndex = 0;
             }
 
             return result;
@@ -135,15 +131,15 @@ namespace Engine.Entities
         /// <param name="name"></param>
         /// <param name="basePosition"></param>
         /// <param name="color"></param>
-        public AbstractTeam(string name, Vector2 basePosition, Color color)
+        protected AbstractTeam(string name, Vector2 basePosition, Color color)
         {
-            this.Name = name;
-            this.BasePosition = basePosition;
-            this.Color = color;
+            _name = name;
+            _basePosition = basePosition;
+            Color = color;
 
-            this.Players = new List<AbstractPlayer>();
-            this.SpawnPoints = new List<Vector2>();
-            this.NextSpawnPointIndex = 0;
+            _players = new List<AbstractPlayer>();
+            _spawnPoints = new List<Vector2>();
+            _nextSpawnPointIndex = 0;
         }
 
         /// <summary>
@@ -152,7 +148,7 @@ namespace Engine.Entities
         public virtual void Update()
         {
             // Update all players
-            foreach (AbstractPlayer player in this.Players)
+            foreach (AbstractPlayer player in _players)
             {
                 player.Update();
             }
@@ -163,7 +159,7 @@ namespace Engine.Entities
         /// </summary>
         public void CaptureFlag()
         {
-            this.Score++;
+            Score++;
         }
 
         /// <summary>
@@ -181,7 +177,7 @@ namespace Engine.Entities
         public virtual void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect, SpriteBatch spriteBatch)
         {
             // Draw all players
-            foreach (AbstractPlayer player in this.Players)
+            foreach (AbstractPlayer player in _players)
             {
                 player.Draw(graphicsDevice, basicEffect, spriteBatch);
             }

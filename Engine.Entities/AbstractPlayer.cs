@@ -158,10 +158,11 @@ namespace Engine.Entities
             _timeOfDeath = DateTime.Now;
             _deathLocation = Body.GetPosition();
 
-            // Remove body from collision pool
+            // Remove body from collision pool so nothing else can interact with it
             CollisionPool.Instance.RemoveBody(Body);
 
-            Body.Reset();
+            Body.Freeze();
+            Body.SetPosition(Team.GetNextSpawnPoint());
         }
 
         /// <summary>
@@ -235,11 +236,11 @@ namespace Engine.Entities
             _messageQueue.SetPosition(Body.GetPosition() - Camera2D.Instance.GetPosition() +
                                       new Vector2(0f, 50f));
 
-            // Spawn logic
             if (!IsAlive &&
                 (DateTime.Now - _timeOfDeath).TotalMilliseconds > (AppSettingsFacade.PlayerRespawnTimeInSeconds * 1000))
             {
-                Spawn();
+                // Respawn if it has been long enough
+                Respawn();
             }
         }
 
@@ -282,13 +283,22 @@ namespace Engine.Entities
         }
 
         /// <summary>
-        /// Spawn
+        /// Initial spawn
         /// </summary>
-        public virtual void Spawn()
+        public virtual void InitialSpawn()
         {
             IsAlive = true;
             CollisionPool.Instance.AddBody(Body);
             Body.SetPosition(Team.GetNextSpawnPoint());
+        }
+
+        /// <summary>
+        /// Respawn
+        /// </summary>
+        public virtual void Respawn()
+        {
+            IsAlive = true;
+            CollisionPool.Instance.AddBody(Body);
         }
 
         /// <summary>

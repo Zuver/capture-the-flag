@@ -58,78 +58,81 @@ namespace CaptureTheFlag.Entities.Players
         {
             base.Update();
 
-            Vector2 force = Vector2.Zero;
-            GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
-            KeyboardState keyboardState = Keyboard.GetState();
-            MouseState mouseState = Mouse.GetState();
-
-            // Check if player is sprinting
-            if (keyboardState.IsKeyDown(Keys.Space) || gamePadState.IsButtonDown(Buttons.LeftStick))
+            if (IsAlive)
             {
-                Body.SetMaxSpeed(AppSettingsFacade.PlayerSprintSpeed);
+                Vector2 force = Vector2.Zero;
+                GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
+                KeyboardState keyboardState = Keyboard.GetState();
+                MouseState mouseState = Mouse.GetState();
+
+                // Check if player is sprinting
+                if (keyboardState.IsKeyDown(Keys.Space) || gamePadState.IsButtonDown(Buttons.LeftStick))
+                {
+                    Body.SetMaxSpeed(AppSettingsFacade.PlayerSprintSpeed);
+                }
+                else
+                {
+                    Body.SetMaxSpeed(AppSettingsFacade.PlayerMaxSpeed);
+                }
+
+                force.X += gamePadState.ThumbSticks.Left.X;
+                force.Y -= gamePadState.ThumbSticks.Left.Y;
+
+                // Check for player movement
+                if (keyboardState.IsKeyDown(Keys.W))
+                {
+                    force.Y += -1.0f;
+                }
+                if (keyboardState.IsKeyDown(Keys.A))
+                {
+                    force.X += -1.0f;
+                }
+                if (keyboardState.IsKeyDown(Keys.S))
+                {
+                    force.Y += 1.0f;
+                }
+                if (keyboardState.IsKeyDown(Keys.D))
+                {
+                    force.X += 1.0f;
+                }
+
+                force.Normalize();
+
+                if (float.IsNaN(force.X))
+                {
+                    force.X = 0.0f;
+                }
+                if (float.IsNaN(force.Y))
+                {
+                    force.Y = 0.0f;
+                }
+
+                Body.ApplyForce(force);
+
+                Camera2D.Instance.SetTargetPosition(Body.GetPosition() -
+                                                    new Vector2((float) AppSettingsFacade.WindowWidth / 2,
+                                                        (float) AppSettingsFacade.WindowHeight / 2));
+
+                if (Gun != null && keyboardState.IsKeyDown(Keys.F) && !PreviousKeyboardState.IsKeyDown(Keys.F))
+                {
+                    DropGun();
+                }
+
+                Vector2 faceDirection = gamePadState.ThumbSticks.Right.Length() > 0.1f
+                    ? new Vector2(gamePadState.ThumbSticks.Right.X, -gamePadState.ThumbSticks.Right.Y)
+                    : GetBody().GetVelocity();
+
+                // Aim player in the direction of the right thumbstick
+                Look(faceDirection);
+
+                // Check for gun fire
+                if (gamePadState.IsButtonDown(Buttons.RightShoulder))
+                    FireGun(faceDirection);
+
+                ProcessMouseState(mouseState);
+
+                PreviousKeyboardState = keyboardState;
             }
-            else
-            {
-                Body.SetMaxSpeed(AppSettingsFacade.PlayerMaxSpeed);
-            }
-
-            force.X += gamePadState.ThumbSticks.Left.X;
-            force.Y -= gamePadState.ThumbSticks.Left.Y;
-
-            // Check for player movement
-            if (keyboardState.IsKeyDown(Keys.W))
-            {
-                force.Y += -1.0f;
-            }
-            if (keyboardState.IsKeyDown(Keys.A))
-            {
-                force.X += -1.0f;
-            }
-            if (keyboardState.IsKeyDown(Keys.S))
-            {
-                force.Y += 1.0f;
-            }
-            if (keyboardState.IsKeyDown(Keys.D))
-            {
-                force.X += 1.0f;
-            }
-
-            force.Normalize();
-
-            if (float.IsNaN(force.X))
-            {
-                force.X = 0.0f;
-            }
-            if (float.IsNaN(force.Y))
-            {
-                force.Y = 0.0f;
-            }
-
-            Body.ApplyForce(force);
-
-            Camera2D.Instance.SetTargetPosition(Body.GetPosition() -
-                                                new Vector2((float) AppSettingsFacade.WindowWidth / 2,
-                                                    (float) AppSettingsFacade.WindowHeight / 2));
-
-            if (Gun != null && keyboardState.IsKeyDown(Keys.F) && !PreviousKeyboardState.IsKeyDown(Keys.F))
-            {
-                DropGun();
-            }
-
-            Vector2 faceDirection = gamePadState.ThumbSticks.Right.Length() > 0.1f
-                ? new Vector2(gamePadState.ThumbSticks.Right.X, -gamePadState.ThumbSticks.Right.Y)
-                : GetBody().GetVelocity();
-
-            // Aim player in the direction of the right thumbstick
-            Look(faceDirection);
-
-            // Check for gun fire
-            if (gamePadState.IsButtonDown(Buttons.RightShoulder))
-                FireGun(faceDirection);
-
-            ProcessMouseState(mouseState);
-
-            PreviousKeyboardState = keyboardState;
         }
 
         /// <summary>
@@ -176,11 +179,11 @@ namespace CaptureTheFlag.Entities.Players
         }
 
         /// <summary>
-        /// Spawn
+        /// Respawn
         /// </summary>
-        public override void Spawn()
+        public override void Respawn()
         {
-            base.Spawn();
+            base.Respawn();
             Camera2D.Instance.Freeze();
         }
 

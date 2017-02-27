@@ -1,10 +1,5 @@
 ﻿using Engine.Entities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.AI.Behaviors.Attack
 {
@@ -20,15 +15,15 @@ namespace Engine.AI.Behaviors.Attack
         /// </summary>
         public AttackBehavior()
         {
-            this.Target = null;
+            Target = null;
         }
 
         /// <summary>
-        /// Reset state
+        /// Freeze state
         /// </summary>
         public void Reset()
         {
-            this.Target = null;
+            Target = null;
         }
 
         /// <summary>
@@ -39,9 +34,9 @@ namespace Engine.AI.Behaviors.Attack
         /// <param name="canSeeTarget"></param>
         public void Update(Vector2 position, AbstractGun gun, bool canSeeTarget)
         {
-            if (this.Target != null && gun != null && canSeeTarget)
+            if (Target != null && gun != null && canSeeTarget)
             {
-                Vector2 toTarget = this.Target.GetBody().GetPosition() - position;
+                Vector2 toTarget = Target.GetBody().GetPosition() - position;
                 gun.Fire(toTarget);
             }
         }
