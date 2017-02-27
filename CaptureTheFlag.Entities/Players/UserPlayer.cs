@@ -118,16 +118,14 @@ namespace CaptureTheFlag.Entities.Players
                     DropGun();
                 }
 
-                Vector2 faceDirection = gamePadState.ThumbSticks.Right.Length() > 0.1f
-                    ? new Vector2(gamePadState.ThumbSticks.Right.X, -gamePadState.ThumbSticks.Right.Y)
-                    : GetBody().GetVelocity();
+                if (gamePadState.ThumbSticks.Right.Length() > 0.25f)
+                {
+                    Vector2 faceDirection = new Vector2(gamePadState.ThumbSticks.Right.X,
+                        -gamePadState.ThumbSticks.Right.Y);
 
-                // Aim player in the direction of the right thumbstick
-                Look(faceDirection);
-
-                // Check for gun fire
-                if (gamePadState.IsButtonDown(Buttons.RightShoulder))
+                    Look(faceDirection);
                     FireGun(faceDirection);
+                }
 
                 ProcessMouseState(mouseState);
 
