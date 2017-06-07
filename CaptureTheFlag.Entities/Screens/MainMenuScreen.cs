@@ -5,11 +5,22 @@ using Engine.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using Engine.UI.Labels;
 
 namespace CaptureTheFlag.Entities.Screens
 {
     public class MainMenuScreen : AbstractScreen
     {
+        /// <summary>
+        /// Title label
+        /// </summary>
+        private readonly TextLabel _titleLabel;
+
+        /// <summary>
+        /// Developer label
+        /// </summary>
+        private readonly TextLabel _developerLabel;
+
         /// <summary>
         /// Start button
         /// </summary>
@@ -32,22 +43,39 @@ namespace CaptureTheFlag.Entities.Screens
         /// </summary>
         private MainMenuScreen()
         {
+            _titleLabel = new TextLabel("Capture the Flag",
+                SpriteFontRepository.Instance.Get("test"),
+                new Vector2((float) AppSettingsFacade.WindowWidth / 2,
+                    (float) AppSettingsFacade.WindowHeight / 2 - (0.25f * AppSettingsFacade.WindowHeight)),
+                LabelAlignment.Center,
+                Color.LightBlue
+            );
+
+            _developerLabel = new TextLabel("By Tyler Zuver",
+                SpriteFontRepository.Instance.Get("test"),
+                new Vector2((float) AppSettingsFacade.WindowWidth / 2,
+                    (float) AppSettingsFacade.WindowHeight / 2 - (0.2f * AppSettingsFacade.WindowHeight)),
+                LabelAlignment.Center,
+                Color.LightBlue
+            );
+
             // Define start button
-            _startButton = new TextButton(new Engine.UI.Labels.TextLabel("Start",
+            _startButton = new TextButton(new TextLabel("Start",
                     SpriteFontRepository.Instance.Get("test"),
-                    new Vector2((float) AppSettingsFacade.WindowWidth / 2, (float) AppSettingsFacade.WindowHeight / 2),
-                    Engine.UI.Labels.LabelAlignment.Center,
+                    new Vector2((float) AppSettingsFacade.WindowWidth / 2,
+                        (float) AppSettingsFacade.WindowHeight / 2 + (0.2f * AppSettingsFacade.WindowHeight)),
+                    LabelAlignment.Center,
                     Color.White),
                 Color.Yellow);
 
             _startButton.Clicked += OnStartButtonClicked;
 
             // Define exit button
-            _exitButton = new TextButton(new Engine.UI.Labels.TextLabel("Exit",
+            _exitButton = new TextButton(new TextLabel("Exit",
                     SpriteFontRepository.Instance.Get("test"),
                     new Vector2((float) AppSettingsFacade.WindowWidth / 2,
-                        (float) AppSettingsFacade.WindowHeight / 2 + (0.1f * AppSettingsFacade.WindowHeight)),
-                    Engine.UI.Labels.LabelAlignment.Center,
+                        (float) AppSettingsFacade.WindowHeight / 2 + (0.25f * AppSettingsFacade.WindowHeight)),
+                    LabelAlignment.Center,
                     Color.White),
                 Color.Yellow);
 
@@ -71,6 +99,8 @@ namespace CaptureTheFlag.Entities.Screens
         /// <param name="spriteBatch"></param>
         public override void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect, SpriteBatch spriteBatch)
         {
+            _developerLabel.Draw(spriteBatch);
+            _titleLabel.Draw(spriteBatch);
             _startButton.Draw(spriteBatch);
             _exitButton.Draw(spriteBatch);
         }
