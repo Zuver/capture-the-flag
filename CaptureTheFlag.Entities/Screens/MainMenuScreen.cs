@@ -60,7 +60,7 @@ namespace CaptureTheFlag.Entities.Screens
             );
 
             // Define start button
-            _startButton = new TextButton(new TextLabel("Start",
+            _startButton = new TextButton(new TextLabel("Play game",
                     SpriteFontRepository.Instance.Get("test"),
                     new Vector2((float) AppSettingsFacade.WindowWidth / 2,
                         (float) AppSettingsFacade.WindowHeight / 2 + (0.2f * AppSettingsFacade.WindowHeight)),
@@ -71,7 +71,7 @@ namespace CaptureTheFlag.Entities.Screens
             _startButton.Clicked += OnStartButtonClicked;
 
             // Define exit button
-            _exitButton = new TextButton(new TextLabel("Exit",
+            _exitButton = new TextButton(new TextLabel("Exit to desktop",
                     SpriteFontRepository.Instance.Get("test"),
                     new Vector2((float) AppSettingsFacade.WindowWidth / 2,
                         (float) AppSettingsFacade.WindowHeight / 2 + (0.25f * AppSettingsFacade.WindowHeight)),
