@@ -2,11 +2,6 @@
 using Engine.Entities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CaptureTheFlag.Entities.Teams
 {
@@ -15,7 +10,7 @@ namespace CaptureTheFlag.Entities.Teams
         /// <summary>
         /// Flag
         /// </summary>
-        private Flag Flag;
+        private readonly Flag _flag;
 
         /// <summary>
         /// Constructor
@@ -26,7 +21,7 @@ namespace CaptureTheFlag.Entities.Teams
         public CaptureTheFlagTeam(string name, Vector2 basePosition, Color color)
             : base(name, basePosition, color)
         {
-            this.Flag = new Flag(Flag.DefaultBody(basePosition), Flag.DefaultModel(color), this);
+            _flag = new Flag(Flag.DefaultBody(basePosition), Flag.DefaultModel(color), this);
         }
 
         /// <summary>
@@ -35,7 +30,7 @@ namespace CaptureTheFlag.Entities.Teams
         public override void Update()
         {
             base.Update();
-            this.Flag.Update();
+            _flag.Update();
         }
 
         /// <summary>
@@ -44,7 +39,7 @@ namespace CaptureTheFlag.Entities.Teams
         /// <returns></returns>
         public override AbstractFlag GetFlag()
         {
-            return this.Flag;
+            return _flag;
         }
 
         /// <summary>
@@ -56,7 +51,7 @@ namespace CaptureTheFlag.Entities.Teams
         public override void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect, SpriteBatch spriteBatch)
         {
             base.Draw(graphicsDevice, basicEffect, spriteBatch);
-            this.Flag.Draw(graphicsDevice, basicEffect, spriteBatch);
+            _flag.Draw(graphicsDevice, basicEffect, spriteBatch);
         }
     }
 }
