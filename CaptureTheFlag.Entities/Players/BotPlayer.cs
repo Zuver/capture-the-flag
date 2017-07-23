@@ -39,7 +39,7 @@ namespace CaptureTheFlag.Entities.Players
         {
             SetCollisionBehaviors(new CollisionBehaviors(this));
             _movementBehavior = new MovementBehavior();
-            _attackBehavior = new AttackBehavior();
+            _attackBehavior = new AttackBehavior(AppSettingsFacade.BotReactionTimeInMilliseconds);
         }
 
         /// <summary>

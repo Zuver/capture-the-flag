@@ -20,6 +20,11 @@ namespace Engine.Utilities
         }
 
         /// <summary>
+        /// Bot reaction time in milliseconds
+        /// </summary>
+        public static int BotReactionTimeInMilliseconds => int.Parse(_appSettings["BotReactionTimeInMilliseconds"]);
+
+        /// <summary>
         /// Window width
         /// </summary>
         public static int WindowWidth => int.Parse(_appSettings["WindowWidth"]);
