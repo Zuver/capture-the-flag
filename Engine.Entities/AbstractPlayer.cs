@@ -1,6 +1,6 @@
 ﻿using System;
 using Engine.Camera;
-using Engine.Content;
+using Engine.Content.Fonts;
 using Engine.Drawing;
 using Engine.GameStateManagement;
 using Engine.Physics.Bodies;

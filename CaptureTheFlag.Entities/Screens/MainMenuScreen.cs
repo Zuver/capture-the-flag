@@ -1,10 +1,10 @@
-﻿using Engine.Content;
-using Engine.GameStateManagement;
+﻿using Engine.GameStateManagement;
 using Engine.UI.Buttons;
 using Engine.Utilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using Engine.Content.Fonts;
 using Engine.UI.Labels;
 
 namespace CaptureTheFlag.Entities.Screens

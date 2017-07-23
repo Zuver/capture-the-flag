@@ -1,8 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Engine.Content.Textures
 {
@@ -11,31 +9,20 @@ namespace Engine.Content.Textures
         /// <summary>
         /// Private data
         /// </summary>
-        private Dictionary<string, Texture2D> Texture2DDictionary;
+        private readonly Dictionary<string, Texture2D> _texture2DDictionary;
 
         /// <summary>
         /// This is a singleton class
         /// </summary>
-        private static Texture2DRepository instance;
-        public static Texture2DRepository Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new Texture2DRepository();
-                }
-
-                return instance;
-            }
-        }
+        private static Texture2DRepository _instance;
+        public static Texture2DRepository Instance => _instance ?? (_instance = new Texture2DRepository());
 
         /// <summary>
         /// Constructor
         /// </summary>
         private Texture2DRepository()
         {
-            this.Texture2DDictionary = new Dictionary<string, Texture2D>();
+            _texture2DDictionary = new Dictionary<string, Texture2D>();
         }
 
         /// <summary>
@@ -47,9 +34,9 @@ namespace Engine.Content.Textures
         {
             try
             {
-                this.Texture2DDictionary.Add(key, texture);
+                _texture2DDictionary.Add(key, texture);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // TODO: Log error
             }
@@ -62,13 +49,13 @@ namespace Engine.Content.Textures
         /// <returns>Texture2D instance</returns>
         public Texture2D Get(string key)
         {
-            Texture2D result = null;
+            Texture2D result;
 
             try
             {
-                result = this.Texture2DDictionary[key];
+                result = _texture2DDictionary[key];
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 result = null;
                 // TODO: Log error

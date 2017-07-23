@@ -1,4 +1,4 @@
-﻿using Engine.Content;
+﻿using Engine.Content.Fonts;
 using Engine.UI.Labels;
 using Engine.Utilities;
 using Microsoft.Xna.Framework;

@@ -4,7 +4,7 @@ using CaptureTheFlag.Entities.Screens;
 using Engine.AI.Behaviors.Attack;
 using Engine.AI.Behaviors.Movement;
 using Engine.Camera;
-using Engine.Content;
+using Engine.Content.Fonts;
 using Engine.Drawing;
 using Engine.Entities;
 using Engine.Entities.Graphs;
@@ -189,12 +189,12 @@ namespace CaptureTheFlag.Entities.Players
         {
             base.Draw(graphicsDevice, basicEffect, spriteBatch);
 
-            if (AppSettingsFacade.IsDebugModeOn)
+            if (AppSettingsFacade.IsPathfindingDebugModeOn)
             {
                 Vector2 target = _movementBehavior.GetTarget();
                 spriteBatch.DrawString(SpriteFontRepository.Instance.Get("debug"),
                     "Movement target: <" + target.X + ", " + target.Y + ">",
-                    Body.GetPosition() - Camera2D.Instance.GetPosition() + new Vector2(30f, 40f), Color.Yellow);
+                    Body.GetPosition() - Camera2D.Instance.GetPosition() + new Vector2(30f, 0f), Color.Yellow);
             }
 
             if (AppSettingsFacade.IsPathfindingDebugModeOn)

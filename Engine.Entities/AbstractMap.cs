@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Engine.Content;
+using Engine.Content.Fonts;
 using Engine.Entities.Graphs;
 using Engine.Physics.Bodies;
 using Engine.Utilities;
@@ -245,7 +245,7 @@ namespace Engine.Entities
 
             if (AppSettingsFacade.IsDebugModeOn)
             {
-                NodeGraph.Instance.Draw(graphicsDevice, basicEffect, true);
+                NodeGraph.Instance.Draw(graphicsDevice, basicEffect);
             }
 
             foreach (AbstractTeam team in _teams)

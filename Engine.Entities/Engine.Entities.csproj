@@ -67,8 +67,8 @@
     <Compile Include="EntityTable.cs" />
     <Compile Include="EventHandlers\DroppedWeaponEventHandler.cs" />
     <Compile Include="EventHandlers\FiredWeapon.cs" />
-    <Compile Include="Graphs\DijkstraEntry.cs" />
-    <Compile Include="Graphs\GraphTraversalHelper.cs" />
+    <Compile Include="Graphs\Internal\DijkstraEntry.cs" />
+    <Compile Include="Graphs\Internal\GraphTraversalHelper.cs" />
     <Compile Include="Graphs\Node.cs" />
     <Compile Include="Graphs\NodeGraph.cs" />
     <Compile Include="ICollisionBehaviors.cs" />

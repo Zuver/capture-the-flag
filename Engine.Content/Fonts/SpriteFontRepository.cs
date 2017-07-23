@@ -1,43 +1,28 @@
-﻿using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
-namespace Engine.Content
+namespace Engine.Content.Fonts
 {
     public class SpriteFontRepository
     {
-        /// <summary>
-        /// Private data
-        /// </summary>
-        private Dictionary<string, SpriteFont> SpriteFontDictionary;
-        private ContentManager ContentManager;
+        private readonly Dictionary<string, SpriteFont> _spriteFontDictionary;
+
+        private ContentManager _contentManager;
 
         /// <summary>
         /// This is a singleton class
         /// </summary>
-        private static SpriteFontRepository instance;
-        public static SpriteFontRepository Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new SpriteFontRepository();
-                }
-
-                return instance;
-            }
-        }
+        private static SpriteFontRepository _instance;
+        public static SpriteFontRepository Instance => _instance ?? (_instance = new SpriteFontRepository());
 
         /// <summary>
         /// Constructor
         /// </summary>
         private SpriteFontRepository()
         {
-            this.SpriteFontDictionary = new Dictionary<string, SpriteFont>();
+            _spriteFontDictionary = new Dictionary<string, SpriteFont>();
         }
 
         /// <summary>
@@ -46,7 +31,7 @@ namespace Engine.Content
         /// <param name="contentManager">ContentManager instance</param>
         public void Initialize(ContentManager contentManager)
         {
-            this.ContentManager = contentManager;
+            _contentManager = contentManager;
         }
 
         /// <summary>
@@ -57,10 +42,10 @@ namespace Engine.Content
         {
             try
             {
-                SpriteFont spriteFont = this.ContentManager.Load<SpriteFont>(name);
-                this.SpriteFontDictionary.Add(name, spriteFont);
+                SpriteFont spriteFont = _contentManager.Load<SpriteFont>(name);
+                _spriteFontDictionary.Add(name, spriteFont);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // TODO: Log error
             }
@@ -73,13 +58,13 @@ namespace Engine.Content
         /// <returns>SpriteFont instance</returns>
         public SpriteFont Get(string key)
         {
-            SpriteFont result = null;
+            SpriteFont result;
 
             try
             {
-                result = this.SpriteFontDictionary[key];
+                result = _spriteFontDictionary[key];
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 result = null;
                 // TODO: Log error

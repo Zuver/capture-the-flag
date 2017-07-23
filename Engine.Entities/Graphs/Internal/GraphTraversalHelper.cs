@@ -1,19 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Engine.Entities.Graphs
+namespace Engine.Entities.Graphs.Internal
 {
-    class GraphTraversalHelper
+    internal static class GraphTraversalHelper
     {
-        public static Dictionary<Node, Node> BuildShortestPathDictionary(Node node)
+        /// <summary>
+        /// Uses Dijkstra's algorithm to map the best path to take if you are coming from any Node
+        /// </summary>
+        /// <param name="goalNode"></param>
+        /// <returns></returns>
+        public static Dictionary<Node, Node> BuildShortestPathDictionary(Node goalNode)
         {
             // Run Dijkstra's algorithm
-            Dictionary<Node, DijkstraEntry> dijkstrasAlgorithmResult = ExecuteDijkstrasAlgorithm(node);
+            Dictionary<Node, DijkstraEntry> dijkstrasAlgorithmResult = ExecuteDijkstrasAlgorithm(goalNode);
 
-            // Construct result
+            // The key Node of the resulting dictionary represents a starting location.
+            // The value Node of the dictionary represents the "best" Node to take in order to eventually arrive at the goal Node.
+            
+            // For example, let's say a bot is trying to get from Node A to the goal Node.
+            // If we look up Node A in this dictionary we'll be able to determine the next Node
+            // the bot should visit in order to minimize the distance to the goal Node.
             Dictionary<Node, Node> result = new Dictionary<Node, Node>();
 
             foreach (Node key in dijkstrasAlgorithmResult.Keys)
@@ -31,8 +38,10 @@ namespace Engine.Entities.Graphs
         /// <returns></returns>
         private static Dictionary<Node, DijkstraEntry> ExecuteDijkstrasAlgorithm(Node start)
         {
-            Dictionary<Node, DijkstraEntry> result = new Dictionary<Node, DijkstraEntry>();
-            result[start] = new DijkstraEntry { Via = start, Cost = 0f, Known = true };
+            Dictionary<Node, DijkstraEntry> result = new Dictionary<Node, DijkstraEntry>
+            {
+                [start] = new DijkstraEntry {Via = start, Cost = 0f, Known = true}
+            };
 
             Node currentNode = start;
 

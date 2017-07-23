@@ -1,12 +1,9 @@
-﻿using Engine.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Drawing;
 using Engine.Physics.Bodies;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Entities.Graphs
 {
@@ -25,7 +22,7 @@ namespace Engine.Entities.Graphs
         /// <summary>
         /// Shortest path dictionary
         /// </summary>
-        private Dictionary<Node, Node> ShortestPathDictionary;
+        private Dictionary<Node, Node> _shortestPathDictionary;
 
         /// <summary>
         /// Gets the best Node to take on the way to the goal Node
@@ -34,7 +31,7 @@ namespace Engine.Entities.Graphs
         /// <returns></returns>
         public Node GetShortestPathNode(Node goal)
         {
-            return this.ShortestPathDictionary[goal];
+            return _shortestPathDictionary[goal];
         }
 
         /// <summary>
@@ -43,13 +40,13 @@ namespace Engine.Entities.Graphs
         /// <param name="shortestPathDictionary"></param>
         public void SetShortestPathDictionary(Dictionary<Node, Node> shortestPathDictionary)
         {
-            this.ShortestPathDictionary = shortestPathDictionary;
+            _shortestPathDictionary = shortestPathDictionary;
         }
 
         /// <summary>
         /// Model for displaying/debugging
         /// </summary>
-        private CirclePrimitive Model;
+        private readonly CirclePrimitive _model;
 
         /// <summary>
         /// Constructor
@@ -57,12 +54,12 @@ namespace Engine.Entities.Graphs
         /// <param name="position"></param>
         public Node(Vector2 position)
         {
-            this.Position = position;
-            this.Neighbors = new List<Node>();
+            Position = position;
+            Neighbors = new List<Node>();
 
             // For debugging
-            this.Model = PrimitiveFactory.Circle(Color.LightBlue, 3f, 4);
-            this.Model.SetPosition(position);
+            _model = PrimitiveFactory.Circle(Color.LightBlue, 3f, 4);
+            _model.SetPosition(position);
         }
 
         /// <summary>
@@ -76,7 +73,7 @@ namespace Engine.Entities.Graphs
                 return null;
 
             // The shortest path information is assumed to be in the ShortestPathDictionary
-            Node result = this.ShortestPathDictionary[goalNode];
+            Node result = _shortestPathDictionary[goalNode];
 
             return result;
         }
@@ -90,11 +87,11 @@ namespace Engine.Entities.Graphs
         /// <returns></returns>
         public static List<Node> Construct(AbstractBody body, int distanceFromBody, int maxDistanceBetweenEachNode)
         {
-            List<Node> result = new List<Node>();
+            List<Node> result;
 
             Type bodyType = body.GetType();
 
-            if (bodyType.Equals(typeof(CircleBody)))
+            if (bodyType == typeof(CircleBody))
             {
                 result = Construct((CircleBody)body, distanceFromBody, maxDistanceBetweenEachNode);
             }
@@ -110,6 +107,8 @@ namespace Engine.Entities.Graphs
         /// Construct
         /// </summary>
         /// <param name="body"></param>
+        /// <param name="distanceFromBody"></param>
+        /// <param name="maxDistanceBetweenEachNode"></param>
         /// <returns></returns>
         private static List<Node> Construct(CircleBody body, int distanceFromBody, int maxDistanceBetweenEachNode)
         {
@@ -119,7 +118,7 @@ namespace Engine.Entities.Graphs
 
             for (int i = 0; i < numNodes; i++)
             {
-                float angle = ((float)i / (float)numNodes) * MathHelper.TwoPi;
+                float angle = (i / (float)numNodes) * MathHelper.TwoPi;
                 Vector2 angleUnitVector = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
                 result.Add(new Node(body.GetPosition() + (body.GetRadius() + distanceFromBody) * angleUnitVector));
             }
@@ -223,7 +222,7 @@ namespace Engine.Entities.Graphs
         /// <param name="basicEffect"></param>
         public void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect)
         {
-            this.Model.Draw(graphicsDevice, basicEffect);
+            _model.Draw(graphicsDevice, basicEffect);
         }
     }
 }

@@ -1,11 +1,8 @@
-﻿using Engine.Drawing;
+﻿using System.Collections.Generic;
+using Engine.Drawing;
+using Engine.Entities.Graphs.Internal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Entities.Graphs
 {
@@ -15,28 +12,19 @@ namespace Engine.Entities.Graphs
         /// This is a singleton
         /// </summary>
         private static NodeGraph _instance;
-        public static NodeGraph Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new NodeGraph();
-
-                return _instance;
-            }
-        }
+        public static NodeGraph Instance => _instance ?? (_instance = new NodeGraph());
 
         /// <summary>
         /// Nodes
         /// </summary>
-        private List<Node> Nodes;
+        private readonly List<Node> _nodes;
 
         /// <summary>
         /// Get nodes
         /// </summary>
         public List<Node> GetNodes()
         {
-            return this.Nodes;
+            return _nodes;
         }
 
         /// <summary>
@@ -45,7 +33,7 @@ namespace Engine.Entities.Graphs
         /// <param name="nodes"></param>
         public void AddNodes(List<Node> nodes)
         {
-            this.Nodes.AddRange(nodes);
+            _nodes.AddRange(nodes);
         }
 
         /// <summary>
@@ -53,7 +41,7 @@ namespace Engine.Entities.Graphs
         /// </summary>
         private NodeGraph()
         {
-            this.Nodes = new List<Node>();
+            _nodes = new List<Node>();
         }
 
         /// <summary>
@@ -72,7 +60,7 @@ namespace Engine.Entities.Graphs
         /// </summary>
         public void ClearEdges()
         {
-            foreach (Node node in this.Nodes)
+            foreach (Node node in _nodes)
             {
                 node.Neighbors = new List<Node>();
             }
@@ -83,7 +71,7 @@ namespace Engine.Entities.Graphs
         /// </summary>
         public void BuildShortestPathData()
         {
-            foreach (Node node in this.Nodes)
+            foreach (Node node in _nodes)
             {
                 node.SetShortestPathDictionary(GraphTraversalHelper.BuildShortestPathDictionary(node));
             }
@@ -94,22 +82,18 @@ namespace Engine.Entities.Graphs
         /// </summary>
         /// <param name="graphicsDevice"></param>
         /// <param name="basicEffect"></param>
-        /// <param name="drawEdges"></param>
-        public void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect, bool drawEdges)
+        public void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect)
         {
-            if (drawEdges)
+            foreach (Node node in _nodes)
             {
-                foreach (Node node in this.Nodes)
+                foreach (Node neighbor in node.Neighbors)
                 {
-                    foreach (Node neighbor in node.Neighbors)
-                    {
-                        PrimitiveFactory.DottedLine(Color.White, node.Position, neighbor.Position, 1f, 5f)
-                            .Draw(graphicsDevice, basicEffect);
-                    }
+                    PrimitiveFactory.DottedLine(Color.White, node.Position, neighbor.Position, 1f, 5f)
+                        .Draw(graphicsDevice, basicEffect);
                 }
             }
 
-            foreach (Node node in this.Nodes)
+            foreach (Node node in _nodes)
             {
                 node.Draw(graphicsDevice, basicEffect);
             }

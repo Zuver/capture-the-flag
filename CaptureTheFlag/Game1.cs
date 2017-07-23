@@ -1,13 +1,11 @@
-﻿#region Using Statements
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Engine.Content;
 using Engine.Utilities;
 using CaptureTheFlag.Entities.Screens;
 using Engine.GameStateManagement;
 using Engine.Camera;
-#endregion
+using Engine.Content.Fonts;
 
 namespace CaptureTheFlag
 {
@@ -36,8 +34,6 @@ namespace CaptureTheFlag
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             // Set up event handling
             ScreenController.Instance.Closed += delegate {
                 Exit();
