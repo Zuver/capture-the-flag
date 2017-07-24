@@ -79,20 +79,23 @@ namespace CaptureTheFlag.Entities.Players
             {
                 UpdateMovementBehavior();
 
-                AbstractPlayer closestEnemyPlayer = GameScreen.Instance.Map.GetClosestPlayer(EnemyTeam,
-                    Body.GetPosition());
-                _attackBehavior.Target = closestEnemyPlayer;
+                _attackBehavior.Target = GameScreen.Instance.Map.GetClosestPlayer(EnemyTeam, Body.GetPosition());
 
-                // Check for a clear line of sight from the bot to its target
-                bool canSeeTarget =
-                    !GameScreen.Instance.Map.CheckLineCollision(Body.GetPosition(),
-                        _attackBehavior.Target.GetBody().GetPosition());
+                bool canSeeTarget = false;
 
-                // Check that the bot's viewport, which should match the dimensions of the player's viewport (no bot cheating), contains the target
-                canSeeTarget &= Math.Abs(Body.GetPosition().X - _attackBehavior.Target.GetBody().GetPosition().X) <
-                                (float) AppSettingsFacade.WindowWidth / 2;
-                canSeeTarget &= Math.Abs(Body.GetPosition().Y - _attackBehavior.Target.GetBody().GetPosition().Y) <
-                                (float) AppSettingsFacade.WindowHeight / 2;
+                if (_attackBehavior.Target != null)
+                {
+                    // Check for a clear line of sight from the bot to its target
+                    canSeeTarget =
+                        !GameScreen.Instance.Map.CheckLineCollision(Body.GetPosition(),
+                            _attackBehavior.Target.GetBody().GetPosition());
+
+                    // Check that the bot's viewport, which should match the dimensions of the player's viewport (no bot cheating), contains the target
+                    canSeeTarget &= Math.Abs(Body.GetPosition().X - _attackBehavior.Target.GetBody().GetPosition().X) <
+                                    (float) AppSettingsFacade.WindowWidth / 2;
+                    canSeeTarget &= Math.Abs(Body.GetPosition().Y - _attackBehavior.Target.GetBody().GetPosition().Y) <
+                                    (float) AppSettingsFacade.WindowHeight / 2;
+                }
 
                 _attackBehavior.Update(Body.GetPosition(), GetGun(), canSeeTarget);
             }

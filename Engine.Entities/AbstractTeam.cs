@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -51,22 +52,24 @@ namespace Engine.Entities
         /// <returns></returns>
         public AbstractPlayer GetClosestPlayer(Vector2 position)
         {
-            if (_players.Count == 0)
-            {
+            // Filter so we are looking at active players only
+            AbstractPlayer[] activePlayers = _players.Where(p => p.IsAlive).ToArray();
+
+            if (!activePlayers.Any())
                 return null;
-            }
 
-            AbstractPlayer result = _players[0];
-            float distanceToClosestPlayerSquared = (position - result.GetBody().GetPosition()).LengthSquared();
+            AbstractPlayer result = activePlayers[0];
 
-            for (int i = 1; i < _players.Count; i++)
+            float distanceSquaredToClosestPlayer = (position - result.GetBody().GetPosition()).LengthSquared();
+
+            for (int i = 1; i < activePlayers.Length; i++)
             {
-                float distanceSquared = (position - _players[i].GetBody().GetPosition()).LengthSquared();
+                float distanceSquared = (position - activePlayers[i].GetBody().GetPosition()).LengthSquared();
 
-                if (_players[i].IsAlive && (!result.IsAlive || distanceSquared < distanceToClosestPlayerSquared))
+                if (activePlayers[i].IsAlive && (!result.IsAlive || distanceSquared < distanceSquaredToClosestPlayer))
                 {
-                    result = _players[i];
-                    distanceToClosestPlayerSquared = distanceSquared;
+                    result = activePlayers[i];
+                    distanceSquaredToClosestPlayer = distanceSquared;
                 }
             }
 
