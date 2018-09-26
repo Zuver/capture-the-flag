@@ -1,11 +1,6 @@
 ﻿using Engine.Entities;
 using Engine.Physics.Bodies;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CaptureTheFlag.Entities.Guns
 {
@@ -14,7 +9,7 @@ namespace CaptureTheFlag.Entities.Guns
         /// <summary>
         /// Gun
         /// </summary>
-        private AbstractGun Gun;
+        private readonly AbstractGun _gun;
 
         /// <summary>
         /// Constructor
@@ -22,7 +17,7 @@ namespace CaptureTheFlag.Entities.Guns
         /// <param name="gun"></param>
         public CollisionBehaviors(AbstractGun gun)
         {
-            this.Gun = gun;
+            _gun = gun;
         }
 
         /// <summary>
@@ -58,8 +53,8 @@ namespace CaptureTheFlag.Entities.Guns
         /// <param name="wall"></param>
         public void ReactToCollision(AbstractWall wall)
         {
-            Vector2 closestPoint = wall.GetBody().GetClosestPointOnPerimeter(this.Gun.GetBody().GetPosition());
-            Vector2 closestPointToPosition = this.Gun.GetBody().GetPosition() - closestPoint;
+            Vector2 closestPoint = wall.GetBody().GetClosestPointOnPerimeter(_gun.GetBody().GetPosition());
+            Vector2 closestPointToPosition = _gun.GetBody().GetPosition() - closestPoint;
             closestPointToPosition.Normalize();
 
             if (float.IsNaN(closestPointToPosition.X))
@@ -67,7 +62,7 @@ namespace CaptureTheFlag.Entities.Guns
             if (float.IsNaN(closestPointToPosition.Y))
                 closestPointToPosition.Y = 0f;
 
-            this.Gun.GetBody().SetPosition(closestPoint + closestPointToPosition * ((CircleBody)this.Gun.GetBody()).GetRadius());
+            _gun.GetBody().SetPosition(closestPoint + closestPointToPosition * ((CircleBody)_gun.GetBody()).GetRadius());
         }
     }
 }
