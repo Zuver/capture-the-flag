@@ -1,10 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Drawing
 {
@@ -13,7 +9,7 @@ namespace Engine.Drawing
         /// <summary>
         /// Private data
         /// </summary>
-        private float Radius;
+        private readonly float _radius;
 
         /// <summary>
         /// Constructor
@@ -24,12 +20,12 @@ namespace Engine.Drawing
         internal CirclePrimitive(Color color, float radius, int numVertices)
             : base(color)
         {
-            this.Radius = radius;
+            _radius = radius;
 
             // Build vertices
-            this.Vertices = new VertexPositionColor[numVertices * 2 + 2];
-            this.SetVertices(0.0f);
-            this.SetColor(color);
+            Vertices = new VertexPositionColor[numVertices * 2 + 2];
+            SetVertices(0.0f);
+            SetColor(color);
         }
 
         /// <summary>
@@ -39,12 +35,12 @@ namespace Engine.Drawing
         public override void SetPosition(Vector2 where)
         {
             // Update all vertices by using the previous position
-            for (int i = 0; i < this.Vertices.Length; i++)
+            for (int i = 0; i < Vertices.Length; i++)
             {
-                this.Vertices[i].Position += new Vector3(where - this.Position, 0.0f);
+                Vertices[i].Position += new Vector3(where - Position, 0.0f);
             }
 
-            this.Position = where;
+            Position = where;
         }
 
         /// <summary>
@@ -53,7 +49,13 @@ namespace Engine.Drawing
         /// <param name="rotation"></param>
         public override void Rotate(float rotation)
         {
-            this.SetVertices(rotation);
+            SetVertices(rotation);
+        }
+
+        public override void SetFillPercentage(float fillPercentage)
+        {
+            FillPercentage = fillPercentage;
+            SetColor(Color);
         }
 
         /// <summary>
@@ -63,17 +65,20 @@ namespace Engine.Drawing
         private void SetVertices(float rotation)
         {
             // First and last vertex will tie the circle together
-            this.Vertices[0].Position = this.Radius * new Vector3((float)Math.Cos(rotation), (float)Math.Sin(rotation), 0.0f) + new Vector3(this.Position, 0.0f);
-            this.Vertices[this.Vertices.Length - 1].Position = this.Radius * new Vector3((float)Math.Cos(rotation), (float)Math.Sin(rotation), 0.0f) + new Vector3(this.Position, 0.0f); ;
+            Vertices[0].Position = _radius * new Vector3((float)Math.Cos(rotation), (float)Math.Sin(rotation), 0.0f) +
+                                   new Vector3(Position, 0.0f);
+            Vertices[Vertices.Length - 1].Position = _radius *
+                                                     new Vector3((float)Math.Cos(rotation), (float)Math.Sin(rotation),
+                                                         0.0f) + new Vector3(Position, 0.0f);
 
             // Middle vertices
-            for (int i = 1; i < (this.Vertices.Length - 2) / 2 + 1; i++)
+            for (int i = 1; i < (Vertices.Length - 2) / 2 + 1; i++)
             {
-                double theta = MathHelper.TwoPi * ((float)i / ((float)(this.Vertices.Length - 2) / 2)) + rotation;
-                Vector3 position = this.Radius * new Vector3((float)Math.Cos(theta), (float)Math.Sin(theta), 0.0f);
+                double theta = MathHelper.TwoPi * (i / ((float)(Vertices.Length - 2) / 2)) + rotation;
+                Vector3 position = _radius * new Vector3((float)Math.Cos(theta), (float)Math.Sin(theta), 0.0f);
 
-                this.Vertices[i * 2 - 1].Position = position + new Vector3(this.Position, 0.0f); ;
-                this.Vertices[i * 2].Position = position + new Vector3(this.Position, 0.0f); ;
+                Vertices[i * 2 - 1].Position = position + new Vector3(Position, 0.0f);
+                Vertices[i * 2].Position = position + new Vector3(Position, 0.0f);
             }
         }
 
@@ -83,9 +88,14 @@ namespace Engine.Drawing
         /// <param name="color"></param>
         private void SetColor(Color color)
         {
-            for (int i = 0; i < this.Vertices.Length; i++)
+            for (int i = 0; i < Vertices.Length * FillPercentage; i++)
             {
-                this.Vertices[i].Color = color;
+                Vertices[i].Color = color;
+            }
+
+            for (int i = (int)(Vertices.Length * FillPercentage); i < Vertices.Length; i++)
+            {
+                Vertices[i].Color = new Color(0, 0, 0, 0);
             }
         }
 
@@ -96,10 +106,11 @@ namespace Engine.Drawing
         /// <param name="basicEffect"></param>
         public override void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect)
         {
-            if (this.IsVisible)
+            if (IsVisible)
             {
                 basicEffect.CurrentTechnique.Passes[0].Apply();
-                graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, CameraTransform(this.Vertices), 0, this.Vertices.Length / 2);
+                graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, CameraTransform(Vertices), 0,
+                    Vertices.Length / 2);
             }
         }
     }

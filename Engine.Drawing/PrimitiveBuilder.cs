@@ -1,8 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Engine.Drawing
 {
@@ -62,12 +59,21 @@ namespace Engine.Drawing
             }
         }
 
+        public override void SetFillPercentage(float fillPercentage)
+        {
+            foreach (AbstractPrimitive item in primitiveList)
+            {
+                item.SetFillPercentage(fillPercentage);
+            }
+        }
+
         /// <summary>
         /// Draw
         /// </summary>
         /// <param name="graphicsDevice"></param>
         /// <param name="basicEffect"></param>
-        public override void Draw(Microsoft.Xna.Framework.Graphics.GraphicsDevice graphicsDevice, Microsoft.Xna.Framework.Graphics.BasicEffect basicEffect)
+        public override void Draw(Microsoft.Xna.Framework.Graphics.GraphicsDevice graphicsDevice,
+            Microsoft.Xna.Framework.Graphics.BasicEffect basicEffect)
         {
             foreach (AbstractPrimitive item in primitiveList)
             {

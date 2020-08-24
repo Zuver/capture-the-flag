@@ -1,10 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Drawing
 {
@@ -84,6 +80,11 @@ namespace Engine.Drawing
         /// </summary>
         /// <param name="rotation"></param>
         public override void Rotate(float rotation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetFillPercentage(float fillPercentage)
         {
             throw new NotImplementedException();
         }

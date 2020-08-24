@@ -135,6 +135,9 @@ namespace Engine.Entities
             {
                 Die(Body.GetPosition());
             }
+
+            // Update health bar
+            _healthBar.SetProgress(Health / (float)AppSettingsFacade.PlayerHealth);
         }
 
         /// <summary>
@@ -197,7 +200,7 @@ namespace Engine.Entities
                 Color.White,
                 3000);
 
-            _healthBar = new CircleProgressBar(new Color(20, 20, 30));
+            _healthBar = new CircleProgressBar(new Color(255, 255, 255));
 
             EntityTable.Instance.Add(Body, this);
 
@@ -222,8 +225,6 @@ namespace Engine.Entities
             _healthLabel.TopLeftPosition = Body.GetPosition() - _healthLabel.Origin -
                                            Camera2D.Instance.GetPosition() + new Vector2(0f, 30f);
 
-            // Update health bar
-            _healthBar.SetProgress(Health / (float) AppSettingsFacade.PlayerHealth);
             _healthBar.SetPosition(Body.GetPosition());
 
             // If the player is moving, then face the direction of movement
@@ -313,7 +314,6 @@ namespace Engine.Entities
             {
                 base.Draw(graphicsDevice, basicEffect, spriteBatch);
 
-                _healthLabel.Draw(spriteBatch);
                 _healthBar.Draw(graphicsDevice, basicEffect);
                 _messageQueue.Draw(spriteBatch);
 
@@ -333,7 +333,7 @@ namespace Engine.Entities
             else
             {
                 spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"),
-                    (AppSettingsFacade.PlayerRespawnTimeInSeconds - (int) ((DateTime.Now - _timeOfDeath).TotalSeconds))
+                    (AppSettingsFacade.PlayerRespawnTimeInSeconds - (int)((DateTime.Now - _timeOfDeath).TotalSeconds))
                     .ToString(),
                     _deathLocation - Camera2D.Instance.GetPosition(),
                     Team.Color);
@@ -366,7 +366,7 @@ namespace Engine.Entities
 
             Gun.GetBody()
                 .SetPosition(Body.GetPosition() +
-                             (((CircleBody) Body).GetRadius() + ((CircleBody) Gun.GetBody()).GetRadius() + 1f) *
+                             (((CircleBody)Body).GetRadius() + ((CircleBody)Gun.GetBody()).GetRadius() + 1f) *
                              direction);
 
             // Add gun body back to collision pool

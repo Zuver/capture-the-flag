@@ -1,9 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Engine.Drawing
 {
@@ -60,7 +57,13 @@ namespace Engine.Drawing
         /// <param name="rotation"></param>
         public override void Rotate(float rotation)
         {
-            this.End = new Vector2(this.Length * (float)Math.Cos(rotation), this.Length * (float)Math.Sin(rotation)) + this.Position;
+            this.End = new Vector2(this.Length * (float)Math.Cos(rotation), this.Length * (float)Math.Sin(rotation)) +
+                       this.Position;
+        }
+
+        public override void SetFillPercentage(float fillPercentage)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

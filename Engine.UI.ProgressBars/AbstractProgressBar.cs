@@ -12,26 +12,12 @@ namespace Engine.UI.ProgressBars
         protected AbstractPrimitive Primitive;
 
         /// <summary>
-        /// Progress
-        /// </summary>
-        private float _progress;
-
-        /// <summary>
-        /// Set progress
-        /// </summary>
-        /// <param name="progress"></param>
-        public void SetProgress(float progress)
-        {
-            this._progress = progress;
-        }
-
-        /// <summary>
         /// Set position
         /// </summary>
         /// <param name="position"></param>
         public void SetPosition(Vector2 position)
         {
-            this.Primitive.SetPosition(position);
+            Primitive.SetPosition(position);
         }
 
         /// <summary>
@@ -39,9 +25,9 @@ namespace Engine.UI.ProgressBars
         /// </summary>
         /// <param name="graphicsDevice"></param>
         /// <param name="basicEffect"></param>
-        public void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect)
+        public virtual void Draw(GraphicsDevice graphicsDevice, BasicEffect basicEffect)
         {
-            this.Primitive.Draw(graphicsDevice, basicEffect);
+            Primitive.Draw(graphicsDevice, basicEffect);
         }
     }
 }

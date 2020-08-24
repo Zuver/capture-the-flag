@@ -1,11 +1,6 @@
 ﻿using Engine.Camera;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Drawing
 {
@@ -38,21 +33,33 @@ namespace Engine.Drawing
         protected Color Color;
 
         /// <summary>
+        /// Fill percentage
+        /// </summary>
+        public float FillPercentage;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="color"></param>
         internal AbstractPrimitive(Color color)
         {
-            this.IsVisible = true;
-            this.Color = color;
+            FillPercentage = 1.0f;
+            IsVisible = true;
+            Color = color;
         }
+
+        /// <summary>
+        /// Set fill percentage
+        /// </summary>
+        /// <param name="fillPercentage"></param>
+        public abstract void SetFillPercentage(float fillPercentage);
 
         /// <summary>
         /// Rotate
         /// </summary>
         /// <param name="rotation">Rotation</param>
         public abstract void Rotate(float rotation);
-        
+
         /// <summary>
         /// Draw
         /// </summary>
