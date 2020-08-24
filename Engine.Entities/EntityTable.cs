@@ -1,9 +1,5 @@
 ﻿using Engine.Physics.Bodies;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Entities
 {
@@ -39,22 +35,13 @@ namespace Engine.Entities
         /// <returns></returns>
         public bool Add(AbstractBody body, AbstractEntity entity)
         {
-            bool result = true;
-
-            try
+            // Enforce one-to-one mapping
+            if (!dictionary.ContainsKey(body) && !dictionary.ContainsValue(entity))
             {
-                // Enforce one-to-one mapping
-                if (!dictionary.ContainsKey(body) && !dictionary.ContainsValue(entity))
-                {
-                    dictionary.Add(body, entity);
-                }
-            }
-            catch (Exception)
-            {
-                result = false;
+                dictionary.Add(body, entity);
             }
 
-            return result;
+            return true;
         }
 
         /// <summary>
@@ -64,18 +51,7 @@ namespace Engine.Entities
         /// <returns></returns>
         public AbstractEntity Get(AbstractBody body)
         {
-            AbstractEntity result;
-
-            try
-            {
-                result = dictionary[body];
-            }
-            catch (Exception)
-            {
-                result = null;
-            }
-
-            return result;
+            return dictionary[body];
         }
     }
 }
