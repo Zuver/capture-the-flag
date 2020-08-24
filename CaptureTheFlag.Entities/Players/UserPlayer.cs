@@ -28,11 +28,10 @@ namespace CaptureTheFlag.Entities.Players
         /// <summary>
         /// Creates the "default" instance of this class
         /// </summary>
-        /// <param name="color"></param>
         /// <param name="team"></param>
         /// <param name="enemyTeam"></param>
         /// <returns></returns>
-        public static UserPlayer Default(Color color, AbstractTeam team, AbstractTeam enemyTeam)
+        public static UserPlayer Default(AbstractTeam team, AbstractTeam enemyTeam)
         {
             CircleBody body = BodyFactory.Circle(false,
                 AppSettingsFacade.PlayerMass,
@@ -41,9 +40,9 @@ namespace CaptureTheFlag.Entities.Players
                 true,
                 AppSettingsFacade.PlayerRadius);
 
-            PrimitiveBuilder model = new PrimitiveBuilder(color);
-            model.Add(PrimitiveFactory.Circle(color, AppSettingsFacade.PlayerRadius, 3));
-            model.Add(PrimitiveFactory.Line(color, Vector2.Zero, Vector2.UnitX * body.GetRadius()));
+            PrimitiveBuilder model = new PrimitiveBuilder(team.Color);
+            model.Add(PrimitiveFactory.Circle(team.Color, AppSettingsFacade.PlayerRadius, 3));
+            model.Add(PrimitiveFactory.Line(team.Color, Vector2.Zero, Vector2.UnitX * body.GetRadius()));
 
             UserPlayer result = new UserPlayer(body, model, team, enemyTeam);
             team.AddPlayer(result);
@@ -110,8 +109,8 @@ namespace CaptureTheFlag.Entities.Players
                 Body.ApplyForce(force);
 
                 Camera2D.Instance.SetTargetPosition(Body.GetPosition() -
-                                                    new Vector2((float) AppSettingsFacade.WindowWidth / 2,
-                                                        (float) AppSettingsFacade.WindowHeight / 2));
+                                                    new Vector2((float)AppSettingsFacade.WindowWidth / 2,
+                                                        (float)AppSettingsFacade.WindowHeight / 2));
 
                 if (Gun != null && keyboardState.IsKeyDown(Keys.F) && !PreviousKeyboardState.IsKeyDown(Keys.F))
                 {

@@ -31,13 +31,13 @@ namespace CaptureTheFlag.Entities.Maps
             CaptureTheFlagTeam blueTeam = new CaptureTheFlagTeam(
                 "Blue team",
                 new Vector2(25f, 25f),
-                Color.Blue);
+                Color.CornflowerBlue);
 
             // Build red team
             CaptureTheFlagTeam redTeam = new CaptureTheFlagTeam(
                 "Red team",
                 new Vector2(AppSettingsFacade.WindowWidth - 25f, AppSettingsFacade.WindowHeight - 25f),
-                Color.Red);
+                Color.Crimson);
 
             // Add guns
             AddGun(new WeakGun(
@@ -63,8 +63,8 @@ namespace CaptureTheFlag.Entities.Maps
             blueTeam.AddSpawnPoint(blueTeam.GetBasePosition() + new Vector2(0f, 50f));
 
             // Add players
-            UserPlayer blueUser = UserPlayer.Default(Color.Blue, blueTeam, redTeam);
-            BotPlayer blueBot1 = BotPlayer.Default(Color.Blue, blueTeam, redTeam);
+            UserPlayer blueUser = UserPlayer.Default(blueTeam, redTeam);
+            BotPlayer blueBot1 = BotPlayer.Default(blueTeam, redTeam);
 
             blueUser.InitialSpawn();
             blueBot1.InitialSpawn();
@@ -76,8 +76,8 @@ namespace CaptureTheFlag.Entities.Maps
             redTeam.AddSpawnPoint(redTeam.GetBasePosition() + new Vector2(0f, -50f));
 
             // Add players
-            BotPlayer redBot1 = BotPlayer.Default(Color.Red, redTeam, blueTeam);
-            BotPlayer redBot2 = BotPlayer.Default(Color.Red, redTeam, blueTeam);
+            BotPlayer redBot1 = BotPlayer.Default(redTeam, blueTeam);
+            BotPlayer redBot2 = BotPlayer.Default(redTeam, blueTeam);
 
             redBot1.InitialSpawn();
             redBot2.InitialSpawn();

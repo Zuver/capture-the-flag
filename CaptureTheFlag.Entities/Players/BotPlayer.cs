@@ -45,11 +45,10 @@ namespace CaptureTheFlag.Entities.Players
         /// <summary>
         /// Creates the "default" instance of this class
         /// </summary>
-        /// <param name="color"></param>
         /// <param name="team"></param>
         /// <param name="otherTeam"></param>
         /// <returns></returns>
-        public static BotPlayer Default(Color color, AbstractTeam team, AbstractTeam otherTeam)
+        public static BotPlayer Default(AbstractTeam team, AbstractTeam otherTeam)
         {
             CircleBody body = BodyFactory.Circle(false,
                 AppSettingsFacade.PlayerMass,
@@ -58,9 +57,9 @@ namespace CaptureTheFlag.Entities.Players
                 true,
                 AppSettingsFacade.PlayerRadius);
 
-            PrimitiveBuilder model = new PrimitiveBuilder(color);
-            model.Add(PrimitiveFactory.Circle(color, AppSettingsFacade.PlayerRadius, 3));
-            model.Add(PrimitiveFactory.Line(color, Vector2.Zero, Vector2.UnitX * body.GetRadius()));
+            PrimitiveBuilder model = new PrimitiveBuilder(team.Color);
+            model.Add(PrimitiveFactory.Circle(team.Color, AppSettingsFacade.PlayerRadius, 3));
+            model.Add(PrimitiveFactory.Line(team.Color, Vector2.Zero, Vector2.UnitX * body.GetRadius()));
 
             BotPlayer result = new BotPlayer(body, model, team, otherTeam);
             team.AddPlayer(result);
@@ -92,9 +91,9 @@ namespace CaptureTheFlag.Entities.Players
 
                     // Check that the bot's viewport, which should match the dimensions of the player's viewport (no bot cheating), contains the target
                     canSeeTarget &= Math.Abs(Body.GetPosition().X - _attackBehavior.Target.GetBody().GetPosition().X) <
-                                    (float) AppSettingsFacade.WindowWidth / 2;
+                                    (float)AppSettingsFacade.WindowWidth / 2;
                     canSeeTarget &= Math.Abs(Body.GetPosition().Y - _attackBehavior.Target.GetBody().GetPosition().Y) <
-                                    (float) AppSettingsFacade.WindowHeight / 2;
+                                    (float)AppSettingsFacade.WindowHeight / 2;
                 }
 
                 _attackBehavior.Update(Body.GetPosition(), GetGun(), canSeeTarget);
