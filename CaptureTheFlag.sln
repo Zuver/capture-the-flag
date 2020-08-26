@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaptureTheFlag", "CaptureTheFlag\CaptureTheFlag.csproj", "{E41C8363-D955-46D2-8E68-88E39B1C0917}"
 EndProject
@@ -38,6 +38,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine.Entities", "Engine.Entities\Engine.Entities.csproj", "{2B885117-A719-4BE5-8E24-C58CEF8C1A94}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine.UI.ProgressBars", "Engine.UI.ProgressBars\Engine.UI.ProgressBars.csproj", "{00B47D21-2E7E-4E2F-BE48-3CA5AA3C5D27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine.Physics.Bodies.Tests", "Engine.Physics.Bodies.Tests\Engine.Physics.Bodies.Tests.csproj", "{F188BE55-183F-4F40-AD02-D27AA367E0E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -185,6 +187,18 @@ Global
 		{00B47D21-2E7E-4E2F-BE48-3CA5AA3C5D27}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{00B47D21-2E7E-4E2F-BE48-3CA5AA3C5D27}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{00B47D21-2E7E-4E2F-BE48-3CA5AA3C5D27}.Release|x86.ActiveCfg = Release|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Debug|x86.Build.0 = Debug|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Release|x86.ActiveCfg = Release|Any CPU
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -206,5 +220,9 @@ Global
 		{ABA834FA-075C-4419-B8F6-7123D1E6CB79} = {50C3E165-5ED0-41DA-9C67-F9982C24828B}
 		{2B885117-A719-4BE5-8E24-C58CEF8C1A94} = {E29D0D6C-13D1-4B54-BA54-5B0D2DC05ABB}
 		{00B47D21-2E7E-4E2F-BE48-3CA5AA3C5D27} = {73DBBE9D-BF10-4F81-BE57-998FF28CD1FF}
+		{F188BE55-183F-4F40-AD02-D27AA367E0E5} = {CCE2904F-13F9-4BC7-9F91-EE703FB95B6B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {50AC7133-1850-47A7-AB55-75CC3334BF73}
 	EndGlobalSection
 EndGlobal

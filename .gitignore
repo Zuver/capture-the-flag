@@ -26,3 +26,5 @@ Engine.Utilities/obj/
 Engine.UI.ProgressBars/obj/
 Engine.Utilities/bin/
 .vs/CaptureTheFlag/v14/.suo
+Engine.Physics.Bodies.Tests/obj/
+Engine.Physics.Bodies.Tests/bin/
