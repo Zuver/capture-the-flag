@@ -52,5 +52,16 @@ namespace Engine.Physics.Bodies
         {
             return new LineBody(rigid, mass, maxSpeed, frictionCoefficient, addToCollisionPool, position, endPosition);
         }
+
+        /// <summary>
+        /// Constructs a line body that will not be added to the collision pool
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public static LineBody AdHocLine(Vector2 start, Vector2 end)
+        {
+            return new LineBody(true, 0f, 0f, 0f, false, start, end);
+        }
     }
 }

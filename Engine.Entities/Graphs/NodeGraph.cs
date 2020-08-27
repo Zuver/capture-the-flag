@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Engine.Drawing;
 using Engine.Entities.Graphs.Internal;
+using Engine.Physics.Bodies;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -67,6 +68,38 @@ namespace Engine.Entities.Graphs
         }
 
         /// <summary>
+        /// We don't want edges to come "too close" to any wall
+        /// </summary>
+        /// <param name="walls"></param>
+        public void CleanUpEdgesAroundWalls(List<AbstractWall> walls, float minimumAllowedSpaceFromWall)
+        {
+            foreach (AbstractWall wall in walls)
+            {
+                foreach (Node node in _nodes)
+                {
+                    List<Node> newNeighbors = new List<Node>();
+
+                    foreach (Node neighbor in node.Neighbors)
+                    {
+                        LineBody adHocLineBody = BodyFactory.AdHocLine(node.Position, neighbor.Position);
+
+                        Vector2 closestPointOnLine = adHocLineBody.GetClosestPointOnPerimeter(wall.GetBody().GetPosition());
+                        Vector2 closestPointOnWallToLine = wall.GetBody().GetClosestPointOnPerimeter(closestPointOnLine);
+                        float distance = Vector2.Distance(closestPointOnLine, closestPointOnWallToLine);
+
+                        // 10f is kind of just a magic number
+                        if (distance - minimumAllowedSpaceFromWall > -10f)
+                        {
+                            newNeighbors.Add(neighbor);
+                        }
+                    }
+
+                    node.Neighbors = newNeighbors;
+                }
+            }
+        }
+
+        /// <summary>
         /// Build shortest path
         /// </summary>
         public void BuildShortestPathData()
@@ -88,7 +121,7 @@ namespace Engine.Entities.Graphs
             {
                 foreach (Node neighbor in node.Neighbors)
                 {
-                    PrimitiveFactory.DottedLine(Color.White, node.Position, neighbor.Position, 1f, 5f)
+                    PrimitiveFactory.DottedLine(Color.White, node.Position, neighbor.Position, 2f, 5f)
                         .Draw(graphicsDevice, basicEffect);
                 }
             }

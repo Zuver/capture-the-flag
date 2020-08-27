@@ -37,8 +37,6 @@ namespace Engine.Entities
         {
             Walls.Add(wall);
             NodeGraph.Instance.AddNodes(Node.Construct(wall.GetBody(), AppSettingsFacade.WallBufferInPixels, 50));
-            ConstructNodeGraphEdges();
-            NodeGraph.Instance.BuildShortestPathData();
         }
 
         /// <summary>
@@ -79,8 +77,6 @@ namespace Engine.Entities
             Walls = new List<AbstractWall>();
             _teams = new List<AbstractTeam>();
             _guns = new List<AbstractGun>();
-
-            ConstructNodeGraphEdges();
         }
 
         #region Abstract methods
@@ -176,6 +172,10 @@ namespace Engine.Entities
             while (currentNode != closestNodeToGoal && !currentNode.Neighbors.Contains(closestNodeToGoal))
             {
                 Node nextNode = currentNode.GetShortestPathNode(closestNodeToGoal);
+
+                if (nextNode == null)
+                    break;
+
                 result.Add(nextNode);
                 currentNode = nextNode;
             }
@@ -215,7 +215,7 @@ namespace Engine.Entities
         {
             bool result = false;
 
-            LineBody lineBody = BodyFactory.Line(true, 0f, 0f, 0f, false, start, end);
+            LineBody lineBody = BodyFactory.AdHocLine(start, end);
 
             foreach (AbstractWall wall in Walls)
             {
@@ -262,7 +262,7 @@ namespace Engine.Entities
             {
                 spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"),
                     _teams[i].GetName() + ": " + _teams[i].Score.ToString(),
-                    new Vector2((float) AppSettingsFacade.WindowWidth / 2, 10 + (i * 30)),
+                    new Vector2((float)AppSettingsFacade.WindowWidth / 2, 10 + (i * 30)),
                     _teams[i].Color);
             }
         }
@@ -309,7 +309,7 @@ namespace Engine.Entities
         /// <summary>
         /// Construct node graph edges
         /// </summary>
-        private void ConstructNodeGraphEdges()
+        protected void ConstructNodeGraphEdges()
         {
             // Clear
             NodeGraph.Instance.ClearEdges();
@@ -321,13 +321,16 @@ namespace Engine.Entities
                 {
                     if (node1 != node2)
                     {
-                        if (!CheckLineCollision(node1.Position, node2.Position))
+                        if (!CheckLineCollision(node1.Position, node2.Position) && !node1.Neighbors.Contains(node2))
                         {
                             NodeGraph.Instance.AddEdge(node1, node2);
                         }
                     }
                 }
             }
+
+            // Some of the edges might be "too close" to a wall
+            NodeGraph.Instance.CleanUpEdgesAroundWalls(Walls, AppSettingsFacade.WallBufferInPixels);
         }
     }
 }

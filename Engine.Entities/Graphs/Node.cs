@@ -31,7 +31,10 @@ namespace Engine.Entities.Graphs
         /// <returns></returns>
         public Node GetShortestPathNode(Node goal)
         {
-            return _shortestPathDictionary[goal];
+            Node result = null;
+            _shortestPathDictionary.TryGetValue(goal, out result);
+
+            return result;
         }
 
         /// <summary>

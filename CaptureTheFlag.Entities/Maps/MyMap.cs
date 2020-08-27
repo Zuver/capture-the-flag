@@ -4,6 +4,7 @@ using CaptureTheFlag.Entities.Teams;
 using CaptureTheFlag.Entities.Walls;
 using Engine.Drawing;
 using Engine.Entities;
+using Engine.Entities.Graphs;
 using Engine.Physics.Bodies;
 using Engine.Utilities;
 using Microsoft.Xna.Framework;
@@ -27,6 +28,48 @@ namespace CaptureTheFlag.Entities.Maps
         /// </summary>
         protected sealed override void Initialize()
         {
+            // Circle wall in the middle of the map
+            PrimitiveBuilder circleWallModel1 = new PrimitiveBuilder(Color.White);
+            circleWallModel1.Add(PrimitiveFactory.Circle(Color.White, 100f, 24));
+            CircleBody circleWallBody1 =
+                (CircleBody)BodyFactory.Circle(true, 0f, 0f, 0f, true, 100f).SetPosition(Size / 2);
+            AddWall(new CircleWall(circleWallBody1, circleWallModel1));
+
+            // Blue-side circle wall in front of flag
+            PrimitiveBuilder circleWallModel2 = new PrimitiveBuilder(Color.Blue);
+            circleWallModel2.Add(PrimitiveFactory.Circle(Color.White, 75f, 24));
+            CircleBody circleWallBody2 =
+                (CircleBody)BodyFactory.Circle(true, 0f, 0f, 0f, true, 75f).SetPosition(Size * 0.25f);
+            AddWall(new CircleWall(circleWallBody2, circleWallModel2));
+
+            // Red-side circle wall in front of flag
+            PrimitiveBuilder circleWallModel3 = new PrimitiveBuilder(Color.Red);
+            circleWallModel3.Add(PrimitiveFactory.Circle(Color.White, 75f, 24));
+            CircleBody circleWallBody3 =
+                (CircleBody)BodyFactory.Circle(true, 0f, 0f, 0f, true, 75f).SetPosition(Size * 0.75f);
+            AddWall(new CircleWall(circleWallBody3, circleWallModel3));
+
+            // Blue-side circle wall in front of flag
+            PrimitiveBuilder circleWallModel4 = new PrimitiveBuilder(Color.Blue);
+            circleWallModel4.Add(PrimitiveFactory.Circle(Color.White, 75f, 24));
+            CircleBody circleWallBody4 =
+                (CircleBody)
+                BodyFactory.Circle(true, 0f, 0f, 0f, true, 75f).SetPosition(new Vector2(Size.X * 0.25f, Size.Y * 0.75f));
+            AddWall(new CircleWall(circleWallBody4, circleWallModel4));
+
+            // Red-side circle wall in front of flag
+            PrimitiveBuilder circleWallModel5 = new PrimitiveBuilder(Color.Blue);
+            circleWallModel5.Add(PrimitiveFactory.Circle(Color.White, 75f, 24));
+            CircleBody circleWallBody5 =
+                (CircleBody)
+                BodyFactory.Circle(true, 0f, 0f, 0f, true, 75f).SetPosition(new Vector2(Size.X * 0.75f, Size.Y * 0.25f));
+            AddWall(new CircleWall(circleWallBody5, circleWallModel5));
+
+            ConstructNodeGraphEdges();
+            NodeGraph.Instance.BuildShortestPathData();
+
+            ConstructOuterWalls(Size);
+
             // Build blue team
             CaptureTheFlagTeam blueTeam = new CaptureTheFlagTeam(
                 "Blue team",
@@ -49,12 +92,12 @@ namespace CaptureTheFlag.Entities.Maps
                 WeakGun.DefaultModel()));
 
             AddGun(new ShotGun(
-                ShotGun.DefaultBody(new Vector2((float) AppSettingsFacade.WindowWidth / 2,
+                ShotGun.DefaultBody(new Vector2((float)AppSettingsFacade.WindowWidth / 2,
                     0.1f * AppSettingsFacade.WindowHeight)),
                 ShotGun.DefaultModel()));
 
             AddGun(new ShotGun(
-                ShotGun.DefaultBody(new Vector2((float) AppSettingsFacade.WindowWidth / 2,
+                ShotGun.DefaultBody(new Vector2((float)AppSettingsFacade.WindowWidth / 2,
                     0.9f * AppSettingsFacade.WindowHeight)),
                 ShotGun.DefaultModel()));
 
@@ -83,47 +126,6 @@ namespace CaptureTheFlag.Entities.Maps
             redBot2.InitialSpawn();
 
             AddTeam(redTeam);
-
-            // Build walls
-
-            // Circle wall in the middle of the map
-            PrimitiveBuilder circleWallModel1 = new PrimitiveBuilder(Color.White);
-            circleWallModel1.Add(PrimitiveFactory.Circle(Color.White, 100f, 24));
-            CircleBody circleWallBody1 =
-                (CircleBody) BodyFactory.Circle(true, 0f, 0f, 0f, true, 100f).SetPosition(Size / 2);
-            AddWall(new CircleWall(circleWallBody1, circleWallModel1));
-
-            // Blue-side circle wall in front of flag
-            PrimitiveBuilder circleWallModel2 = new PrimitiveBuilder(Color.Blue);
-            circleWallModel2.Add(PrimitiveFactory.Circle(Color.White, 75f, 24));
-            CircleBody circleWallBody2 =
-                (CircleBody) BodyFactory.Circle(true, 0f, 0f, 0f, true, 75f).SetPosition(Size * 0.25f);
-            AddWall(new CircleWall(circleWallBody2, circleWallModel2));
-
-            // Red-side circle wall in front of flag
-            PrimitiveBuilder circleWallModel3 = new PrimitiveBuilder(Color.Red);
-            circleWallModel3.Add(PrimitiveFactory.Circle(Color.White, 75f, 24));
-            CircleBody circleWallBody3 =
-                (CircleBody) BodyFactory.Circle(true, 0f, 0f, 0f, true, 75f).SetPosition(Size * 0.75f);
-            AddWall(new CircleWall(circleWallBody3, circleWallModel3));
-
-            // Blue-side circle wall in front of flag
-            PrimitiveBuilder circleWallModel4 = new PrimitiveBuilder(Color.Blue);
-            circleWallModel4.Add(PrimitiveFactory.Circle(Color.White, 75f, 24));
-            CircleBody circleWallBody4 =
-                (CircleBody)
-                BodyFactory.Circle(true, 0f, 0f, 0f, true, 75f).SetPosition(new Vector2(Size.X * 0.25f, Size.Y * 0.75f));
-            AddWall(new CircleWall(circleWallBody4, circleWallModel4));
-
-            // Red-side circle wall in front of flag
-            PrimitiveBuilder circleWallModel5 = new PrimitiveBuilder(Color.Blue);
-            circleWallModel5.Add(PrimitiveFactory.Circle(Color.White, 75f, 24));
-            CircleBody circleWallBody5 =
-                (CircleBody)
-                BodyFactory.Circle(true, 0f, 0f, 0f, true, 75f).SetPosition(new Vector2(Size.X * 0.75f, Size.Y * 0.25f));
-            AddWall(new CircleWall(circleWallBody5, circleWallModel5));
-
-            ConstructOuterWalls(Size);
         }
 
         protected override void ConstructOuterWalls(Vector2 size)
