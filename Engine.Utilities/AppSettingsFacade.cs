@@ -16,7 +16,7 @@ namespace Engine.Utilities
         public static void Refresh()
         {
             _appSettings = ConfigurationManager.AppSettings;
-            _isDebugModeOn = bool.Parse(_appSettings["IsDebugModeOn"]);
+            IsDebugModeOn = bool.Parse(_appSettings["IsDebugModeOn"]);
         }
 
         /// <summary>
@@ -44,18 +44,11 @@ namespace Engine.Utilities
         /// </summary>
         public static bool SynchronizeWithVerticalRetrace => bool.Parse(_appSettings["SynchronizeWithVerticalRetrace"]);
 
-        /// <summary>
-        /// Is debug mode on?
-        /// </summary>
-        private static bool _isDebugModeOn;
-
-        public static bool IsDebugModeOn
-        {
-            get { return _isDebugModeOn; }
-            set { _isDebugModeOn = value; }
-        }
+        public static bool IsDebugModeOn { get; set; }
 
         public static bool IsPathfindingDebugModeOn { get; set; }
+
+        public static bool IsPaused { get; set; } = false;
 
         /// <summary>
         /// Player radius

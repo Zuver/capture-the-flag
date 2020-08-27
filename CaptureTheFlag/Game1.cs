@@ -35,7 +35,8 @@ namespace CaptureTheFlag
         protected override void Initialize()
         {
             // Set up event handling
-            ScreenController.Instance.Closed += delegate {
+            ScreenController.Instance.Closed += delegate
+            {
                 Exit();
             };
 
@@ -107,13 +108,21 @@ namespace CaptureTheFlag
                 AppSettingsFacade.IsPathfindingDebugModeOn = !AppSettingsFacade.IsPathfindingDebugModeOn;
             }
 
-            // Update logic
-            ScreenController.Instance.ActiveScreen.Update();
+            if (keyboardState.IsKeyDown(Keys.P) && !_previousKeyboardState.IsKeyDown(Keys.P))
+            {
+                AppSettingsFacade.IsPaused = !AppSettingsFacade.IsPaused;
+            }
 
-            // Update global current game time
-            TimeHelper.SetCurrentGameTime(gameTime.TotalGameTime.TotalMilliseconds);
+            if (!AppSettingsFacade.IsPaused)
+            {
+                // Update logic
+                ScreenController.Instance.ActiveScreen.Update();
 
-            base.Update(gameTime);
+                // Update global current game time
+                TimeHelper.SetCurrentGameTime(gameTime.TotalGameTime.TotalMilliseconds);
+
+                base.Update(gameTime);
+            }
 
             _previousKeyboardState = keyboardState;
         }
@@ -132,9 +141,6 @@ namespace CaptureTheFlag
 
             // Draw active screen and its components
             ScreenController.Instance.ActiveScreen.Draw(GraphicsDevice, _basicEffect, _spriteBatch);
-
-            // _spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"), "Press F1 to toggle debug mode", new Vector2(10, 10), Color.White);
-            // _spriteBatch.DrawString(SpriteFontRepository.Instance.Get("test"), "Press F2 to toggle pathfinding debug mode", new Vector2(10, 40), Color.White);
 
             // If debug mode is on, display useful information on the screen
             if (AppSettingsFacade.IsDebugModeOn)
