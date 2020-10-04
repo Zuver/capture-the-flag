@@ -1,1 +1,9 @@
-The purpose of this project is to learn game development without relying on powerful game engines to do all the heavy lifting. I'm using C# and limiting myself to the latest MonoGame framework and the latest .NET framework. Since I am building the game engine myself, this will be a slower-moving project. But speed is not the key here. Learning how to make a game from "scratch" is what I am hoping to get better at. Feel free to have a look around the source code and let me know if you have any questions or suggestions.
+This is a simple top-down shooter game written in C#.
+
+These are the frameworks I am using:
+- MonoGame 3.8.0.1641 (released August 10th, 2020)
+- .NET 4.7.2 (released April 30th, 2018)
+
+To make it more of a challenge, I am not using a game "engine" for this project. So all the physics and AI was written by me.
+
+I'm not sure what my ultimate goal is with this project, but I'd like to be able to play it on my Raspberry Pi. So eventually, a migration to .NET Core will have to happen.
