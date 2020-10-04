@@ -47,6 +47,7 @@ namespace CaptureTheFlag
             _graphics.IsFullScreen = AppSettingsFacade.IsFullScreen;
             _graphics.SynchronizeWithVerticalRetrace = AppSettingsFacade.SynchronizeWithVerticalRetrace;
             _graphics.PreferMultiSampling = true;
+            _graphics.ApplyChanges();
 
             _basicEffect = new BasicEffect(_graphics.GraphicsDevice)
             {

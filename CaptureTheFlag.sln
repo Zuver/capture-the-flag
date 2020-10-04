@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine.Entities", "Engine.E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine.UI.ProgressBars", "Engine.UI.ProgressBars\Engine.UI.ProgressBars.csproj", "{00B47D21-2E7E-4E2F-BE48-3CA5AA3C5D27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine.Physics.Bodies.Tests", "Engine.Physics.Bodies.Tests\Engine.Physics.Bodies.Tests.csproj", "{F188BE55-183F-4F40-AD02-D27AA367E0E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine.Physics.Bodies.Tests", "Engine.Physics.Bodies.Tests\Engine.Physics.Bodies.Tests.csproj", "{F188BE55-183F-4F40-AD02-D27AA367E0E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
